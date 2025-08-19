@@ -1,9 +1,9 @@
 "use server";
 
-
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";  // ✅ Clerk auth
 import { redirect } from "next/navigation";
+import { toast } from "sonner";
 
 async function geocodeAddress(address: string) {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY!;
@@ -16,7 +16,7 @@ async function geocodeAddress(address: string) {
   const data = await response.json();
 
   if (!data.results?.length) {
-    throw new Error("Address not found");
+    toast.error("Address not found");
   }
 
   const { lat, lng } = data.results[0].geometry.location;
@@ -27,12 +27,12 @@ export async function addLocation(formData: FormData, tripId: string) {
   // ✅ Get authenticated user from Clerk
   const { userId } = await auth();
   if (!userId) {
-    throw new Error("Not authenticated");
+    toast.error("Not authenticated");
   }
 
   const address = formData.get("address")?.toString();
   if (!address) {
-    throw new Error("Missing address");
+    toast.error("Missing address");
   }
 
   const { lat, lng } = await geocodeAddress(address);
