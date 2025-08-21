@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type Trip = {
   id: string;
@@ -25,6 +27,9 @@ export default function TripsClient({
     "new" | "ai" | "create" | null
   >(null);
 
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
   const handleNavigate = (type: "new" | "ai" | "create") => {
     setLoadingButton(type);
   };
@@ -36,6 +41,27 @@ export default function TripsClient({
   const sortedTrips = [...trips].sort(
     (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
   );
+
+  const handleDelete = async (tripId: string) => {
+    try {
+      setLoading(true);
+
+      const res = await fetch(`/api/trips/${tripId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete trip");
+
+      toast.success("Trip deleted successfully!");
+      // give toast time to show before refreshing
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete trip");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-6 container mx-auto px-4 py-8 mt-10 pt-16">
@@ -83,7 +109,7 @@ export default function TripsClient({
       </div>
 
       {/* Welcome Card */}
-      <Card className="bg-black/40 backdrop-blur-md border-0 text-foreground">
+      <Card className="bg-indigo-300 border-0 text-black">
         <CardHeader>
           <CardTitle>Welcome back, {userName}</CardTitle>
         </CardHeader>
@@ -108,7 +134,7 @@ export default function TripsClient({
           Your Recent Trips
         </h2>
         {trips.length === 0 ? (
-          <Card className="border-0 backdrop-blur-md bg-black/40 text-foreground">
+          <Card className="border-0 backdrop-blur-md bg-indigo-300 text-black">
             <CardContent className="flex flex-col items-center justify-center py-8">
               <h3 className="text-xl font-medium mb-2">No trips yet.</h3>
               <p className="text-center mb-4 max-w-md">
@@ -133,22 +159,36 @@ export default function TripsClient({
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {sortedTrips.slice(0, 6).map((trip) => (
-              <Link key={trip.id} href={`/trips/${trip.id}`}>
-                <Card className="button-hover border-0 transition-transform duration-300 hover:scale-105 hover:shadow-lg bg-black/40 text-foreground">
-                  <CardHeader>
-                    <CardTitle className="line-clamp-1">{trip.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm line-clamp-2 mb-2">
-                      {trip.description}
-                    </p>
-                    <div className="text-sm">
-                      {new Date(trip.startDate).toLocaleDateString()} -{" "}
-                      {new Date(trip.endDate).toLocaleDateString()}
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+              <Card
+                key={trip.id}
+                className="button-hover border-0 transition-transform duration-300 hover:scale-105 hover:shadow-lg bg-indigo-300 text-black"
+              >
+                <CardHeader>
+                  <div className="flex justify-between">
+                    <Link href={`/trips/${trip.id}`} className="flex-1">
+                      <CardTitle className="line-clamp-1 text-2xl cursor-pointer">
+                        {trip.title.toUpperCase()}
+                      </CardTitle>
+                    </Link>
+                    <Button
+                      className="items-center bg-red-500 hover:bg-red-600 text-white ml-3"
+                      onClick={() => handleDelete(trip.id)}
+                      disabled={loading}
+                    >
+                      {loading ? "Deleting..." : "Delete"}
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm line-clamp-2 mb-2">
+                    {trip.description}
+                  </p>
+                  <div className="text-sm">
+                    {new Date(trip.startDate).toLocaleDateString()} -{" "}
+                    {new Date(trip.endDate).toLocaleDateString()}
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}

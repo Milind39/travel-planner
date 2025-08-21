@@ -1,41 +1,96 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";  // ✅ Clerk auth
+import { auth, currentUser } from "@clerk/nextjs/server"; // ✅ Clerk
 import { redirect } from "next/navigation";
-import { toast } from "sonner";
 
-async function geocodeAddress(address: string) {
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY!;
+/**
+ * Forward Geocode: address → lat,lng
+ */
+async function geocodeAddress(address: string, email: string) {
   const response = await fetch(
-    `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
       address
-    )}&key=${apiKey}`
+    )}&email=${encodeURIComponent(email)}`,
+    {
+      headers: {
+        "User-Agent": `YourAppName/1.0 (${email})`,
+      },
+    }
   );
 
   const data = await response.json();
 
-  if (!data.results?.length) {
-    toast.error("Address not found");
+  if (!data?.length) {
+    throw new Error("Address not found");
   }
 
-  const { lat, lng } = data.results[0].geometry.location;
-  return { lat, lng };
+  const { lat, lon, display_name } = data[0];
+  return {
+    lat: parseFloat(lat),
+    lng: parseFloat(lon),
+    locationTitle: display_name,
+  };
+}
+
+/**
+ * Reverse Geocode: lat,lng → address
+ */
+async function reverseGeocode(lat: number, lng: number, email: string) {
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&email=${encodeURIComponent(
+      email
+    )}`,
+    {
+      headers: {
+        "User-Agent": `YourAppName/1.0 (${email})`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!data?.display_name) {
+    throw new Error("Location name not found");
+  }
+
+  return {
+    lat,
+    lng,
+    locationTitle: data.display_name,
+  };
 }
 
 export async function addLocation(formData: FormData, tripId: string) {
-  // ✅ Get authenticated user from Clerk
+  // ✅ Get authenticated user
   const { userId } = await auth();
   if (!userId) {
-    toast.error("Not authenticated");
+    throw new Error("Not authenticated");
   }
 
-  const address = formData.get("address")?.toString();
-  if (!address) {
-    toast.error("Missing address");
+  // ✅ Get Clerk user details (email for Nominatim)
+  const user = await currentUser();
+  const email = user?.emailAddresses[0]?.emailAddress || "default@example.com";
+
+  const rawInput = formData.get("address")?.toString();
+  if (!rawInput || !rawInput.trim()) {
+    throw new Error("Missing address");
   }
 
-  const { lat, lng } = await geocodeAddress(address);
+  let location;
+  const latLngRegex = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+
+  if (latLngRegex.test(rawInput)) {
+    // ✅ User entered lat,lng → reverse geocode
+    const [latStr, lngStr] = rawInput.split(",");
+    const lat = parseFloat(latStr.trim());
+    const lng = parseFloat(lngStr.trim());
+
+    location = await reverseGeocode(lat, lng, email);
+  } else {
+    // ✅ User entered address → forward geocode
+    location = await geocodeAddress(rawInput, email);
+  }
 
   const count = await prisma.location.count({
     where: { tripId },
@@ -43,13 +98,11 @@ export async function addLocation(formData: FormData, tripId: string) {
 
   await prisma.location.create({
     data: {
-      locationTitle: address,
-      lat,
-      lng,
+      locationTitle: location.locationTitle,
+      lat: location.lat,
+      lng: location.lng,
       tripId,
       order: count,
-      // optional: associate with user if needed
-    //   userId,
     },
   });
 

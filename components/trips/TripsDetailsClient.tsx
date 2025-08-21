@@ -1,15 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Location, Trip } from "@/app/generated/prisma";
 import Image from "next/image";
 import { Calendar, MapPin, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import Map from "@/components/map";
 import SortableItinerary from "@/components/sortable-itinerary";
 import { Button } from "../ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import DashBoardButton from "../DashboardButton";
+import GlobeView from "@/components/GlobeView";
 
 export type TripWithLocation = Trip & {
   locations: Location[];
@@ -18,6 +19,11 @@ export type TripWithLocation = Trip & {
 interface TripDetailClientProps {
   trip: TripWithLocation;
 }
+
+// Import Map dynamically (disable SSR)
+const Map = dynamic(() => import("../map"), {
+  ssr: false,
+});
 
 export default function TripDetailClient({ trip }: TripDetailClientProps) {
   const [activeTab, setActiveTab] = useState("overview");
@@ -58,12 +64,8 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
         </div>
       </div>
       <div className="bg-black/40 backdrop-blur-md border-0 text-foreground p-6 shadow rounded-lg">
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="text-center justify-center items-center"
-        >
-          <TabsList className="mb-8 bg-gray-500 pl-0 pr-0 flex justify-items-center gap-2 mx-[554px]">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-8 bg-gray-500 pl-0 pr-0">
             <TabsTrigger
               value="overview"
               className="text-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white"
@@ -133,7 +135,8 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
               )}
 
               <div>
-                <p className="text-gray-600 leading-relaxed">
+                <h2 className="text-2xl font-semibold mb-4">Description</h2>
+                <p className="text-foreground leading-relaxed pl-5">
                   {trip.description}
                 </p>
               </div>
@@ -146,7 +149,7 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
             </div>
 
             {trip.locations.length === 0 ? (
-              <div className="text-center p-4">
+              <div className="text-center p-4 text-foreground">
                 <p className="pb-3">
                   Add locations to see them on the itinerary.
                 </p>
