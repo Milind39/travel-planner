@@ -9,8 +9,6 @@ import { useState } from "react";
 import SortableItinerary from "@/components/sortable-itinerary";
 import { Button } from "../ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import DashBoardButton from "../DashboardButton";
-import GlobeView from "@/components/GlobeView";
 
 export type TripWithLocation = Trip & {
   locations: Location[];
@@ -44,7 +42,10 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
       )}
       <div className="bg-black/40 backdrop-blur-md border-0  p-6 shadow rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center">
         <div className="text-foreground">
-          <h1 className="text-4xl font-extrabold "> {trip.title}</h1>
+          <h1 className="text-4xl font-extrabold ">
+            {" "}
+            {trip.title.toUpperCase()}
+          </h1>
 
           <div className="flex items-center  mt-2">
             <Calendar className="h-5 w-5 mr-2" />

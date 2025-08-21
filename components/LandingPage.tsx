@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Plane, Compass, Globe2, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
+import { PricingTable, useUser } from "@clerk/nextjs";
+import TiltCard from "./farmer-components/TiltCard";
+import CountUpStat from "./farmer-components/CountAnimation";
 
 export default function LandingPage() {
   const { isSignedIn } = useUser();
@@ -77,13 +79,15 @@ export default function LandingPage() {
               desc: "Discover hidden gems and authentic experiences.",
             },
           ].map((feature, idx) => (
-            <Card key={idx} className="p-6 shadow-md rounded-2xl">
-              <CardContent className="flex flex-col items-center text-center space-y-4">
-                {feature.icon}
-                <h3 className="font-semibold text-xl">{feature.title}</h3>
-                <p className="text-gray-300">{feature.desc}</p>
-              </CardContent>
-            </Card>
+            <TiltCard key={idx}>
+              <Card className="p-8 shadow-md rounded-2xl">
+                <CardContent className="flex flex-col items-center text-center space-y-4">
+                  {feature.icon}
+                  <h3 className="font-semibold text-xl">{feature.title}</h3>
+                  <p className="text-gray-500">{feature.desc}</p>
+                </CardContent>
+              </Card>
+            </TiltCard>
           ))}
         </div>
       </section>
@@ -95,15 +99,23 @@ export default function LandingPage() {
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { stat: "10k+", label: "Trips Planned" },
-            { stat: "4.9/5", label: "Average Rating" },
-            { stat: "50+", label: "Countries Covered" },
-            { stat: "100k+", label: "Happy Travelers" },
+            { value: 10000, label: "Trips Planned", suffix: "+", decimals: 0 },
+            { value: 4.9, label: "Average Rating", suffix: "/5", decimals: 1 },
+            { value: 50, label: "Countries Covered", suffix: "+", decimals: 0 },
+            {
+              value: 100000,
+              label: "Happy Travelers",
+              suffix: "+",
+              decimals: 0,
+            },
           ].map((item, idx) => (
-            <div key={idx} className="flex flex-col items-center">
-              <p className="text-4xl font-bold text-indigo-600">{item.stat}</p>
-              <p className="text-gray-800 text-xl">{item.label}</p>
-            </div>
+            <CountUpStat
+              key={idx}
+              value={item.value}
+              label={item.label}
+              suffix={item.suffix}
+              decimals={item.decimals}
+            />
           ))}
         </div>
       </section>
@@ -131,60 +143,65 @@ export default function LandingPage() {
                 "Budget planning was spot on—I saved money while enjoying more!",
             },
           ].map((testimonial, idx) => (
-            <Card key={idx} className="p-6 rounded-2xl shadow-md">
-              <CardContent>
-                <p className="italic mb-4">“{testimonial.feedback}”</p>
-                <p className="font-semibold">- {testimonial.name}</p>
-              </CardContent>
-            </Card>
+            <TiltCard key={idx}>
+              <Card className="p-6 rounded-2xl shadow-md">
+                <CardContent>
+                  <p className="italic mb-4">“{testimonial.feedback}”</p>
+                  <p className="font-semibold">- {testimonial.name}</p>
+                </CardContent>
+              </Card>
+            </TiltCard>
           ))}
         </div>
       </section>
 
       {/* Pricing */}
+      {/* <PricingPlans /> */}
       <section className="py-20 px-6 bg-indigo-50 text-black">
         <h2 className="text-3xl font-bold text-center mb-12">
           Choose Your Plan
         </h2>
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {[
-            {
-              name: "Free Plan",
-              price: "$0",
-              features: [
-                "Basic Itinerary",
-                "Budget Suggestions",
-                "Popular Destinations",
-              ],
-            },
-            {
-              name: "Pro Plan",
-              price: "$9.99/mo",
-              features: [
-                "Multi-City Planning",
-                "Offline Access",
-                "Custom Experiences",
-                "Priority Support",
-              ],
-            },
-          ].map((plan, idx) => (
-            <Card key={idx} className="p-6 rounded-2xl shadow-md">
-              <CardContent className="text-center">
-                <h3 className="font-bold text-xl mb-2">{plan.name}</h3>
-                <p className="text-3xl font-bold text-indigo-600 mb-4">
-                  {plan.price}
-                </p>
-                <ul className="space-y-2 mb-6 text-gray-600">
-                  {plan.features.map((f, i) => (
-                    <li key={i}>✔ {f}</li>
-                  ))}
-                </ul>
-                <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg">
-                  Get Started
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+
+        <div className="max-w-4xl mx-auto">
+          <PricingTable
+            appearance={{
+              variables: {
+                colorPrimary: "#4f46e5",
+                colorBackground: "#ffffff",
+                borderRadius: "1rem",
+                fontFamily: "Inter, sans-serif",
+              },
+              elements: {
+                // Pricing Table
+                pricingTableContainer:
+                  "shadow-lg border border-gray-200 rounded-2xl",
+                pricingPlan:
+                  "hover:scale-[1.02] transition-transform duration-200",
+                buttonPrimary:
+                  "bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-lg px-6 py-2",
+                badge:
+                  "bg-indigo-100 text-indigo-600 rounded-md px-2 py-1 text-sm",
+
+                // Checkout Modal (Centered)
+                checkoutModal:
+                  "fixed inset-0 flex items-center justify-center bg-black/40 z-[9999]", // <--- overlay + high z-index
+                checkoutModalContent:
+                  "bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full relative",
+
+                checkoutModalHeader:
+                  "text-xl font-bold text-gray-900 mb-4 flex justify-between items-center",
+                checkoutModalCloseButton:
+                  "text-gray-500 hover:text-gray-700 transition-colors",
+                checkoutModalBody: "space-y-4 text-gray-700",
+                checkoutModalFooter: "mt-6 flex justify-end",
+                checkoutButton:
+                  "bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-semibold",
+                checkoutPlanTitle: "text-lg font-semibold text-indigo-600",
+                checkoutPlanPrice: "text-2xl font-bold text-gray-900",
+                checkoutPlanInterval: "text-sm text-gray-500",
+              },
+            }}
+          />
         </div>
       </section>
 
@@ -209,8 +226,8 @@ export default function LandingPage() {
             },
           ].map((faq, idx) => (
             <div key={idx}>
-              <h3 className="font-semibold text-lg">{faq.q}</h3>
-              <p className="text-gray-400 pl-7">{faq.a}</p>
+              <h3 className="font-semibold text-lg ml-10">{faq.q}</h3>
+              <p className="text-gray-400 ml-16">{faq.a}</p>
             </div>
           ))}
         </div>
