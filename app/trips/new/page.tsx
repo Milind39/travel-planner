@@ -53,7 +53,7 @@ export default function NewTrip() {
       }
 
       toast.success("Trip created successfully! 🎉", { duration: 2000 });
-      router.push("/trips");
+      router.push("/trips?refresh=true");
     } catch (err) {
       console.error(err);
       toast.error(err instanceof Error ? err.message : "Something went wrong.");

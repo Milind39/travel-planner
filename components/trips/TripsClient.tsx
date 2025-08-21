@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Cross, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Badge } from "../ui/badge";
 
 type Trip = {
   id: string;
@@ -29,10 +30,19 @@ export default function TripsClient({
 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [deleted, setDeleted] = useState(false);
 
   const handleNavigate = (type: "new" | "ai" | "create") => {
     setLoadingButton(type);
   };
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("refresh") === "true") {
+      router.refresh();
+    }
+  }, [searchParams, router]);
 
   const upcomingTrips = trips.filter(
     (trip) => new Date(trip.startDate) > new Date()
@@ -42,6 +52,13 @@ export default function TripsClient({
     (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
   );
 
+  useEffect(() => {
+    if (deleted) {
+      router.refresh();
+      setDeleted(false); // reset after refresh
+    }
+  }, [deleted, router]);
+
   const handleDelete = async (tripId: string) => {
     try {
       setLoading(true);
@@ -50,14 +67,16 @@ export default function TripsClient({
         method: "DELETE",
       });
 
-      if (!res.ok) throw new Error("Failed to delete trip");
-
-      toast.success("Trip deleted successfully!");
-      // give toast time to show before refreshing
-      router.refresh();
+      if (res.ok) {
+        toast.success("Trip deleted successfully ✅");
+        setDeleted(true); // trigger useEffect
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Failed to delete trip ❌");
+      }
     } catch (err) {
+      toast.error("Something went wrong ❌");
       console.error(err);
-      toast.error("Failed to delete trip");
     } finally {
       setLoading(false);
     }
@@ -170,13 +189,17 @@ export default function TripsClient({
                         {trip.title.toUpperCase()}
                       </CardTitle>
                     </Link>
-                    <Button
-                      className="items-center bg-red-500 hover:bg-red-600 text-white ml-3"
+                    <Badge
+                      className="items-center bg-red-400 hover:bg-red-600 text-white ml-3 cursor-pointer"
                       onClick={() => handleDelete(trip.id)}
-                      disabled={loading}
+                      variant={"destructive"}
                     >
-                      {loading ? "Deleting..." : "Delete"}
-                    </Button>
+                      {loading ? (
+                        <Loader2 className="animate-spin" />
+                      ) : (
+                        <Trash2 />
+                      )}
+                    </Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
