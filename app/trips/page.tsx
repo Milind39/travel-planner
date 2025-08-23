@@ -14,12 +14,9 @@ export default async function TripsPage() {
     where: { clerkUserId: user.id },
   });
 
+  // ✅ If user not found in DB, redirect to landing page with query param
   if (!dbUser) {
-    return (
-      <div className="container mx-auto py-8">
-        <p>User not found in database.</p>
-      </div>
-    );
+    redirect("/?userNotFound=true");
   }
 
   const trips = await db.trip.findMany({
@@ -27,14 +24,12 @@ export default async function TripsPage() {
     orderBy: { startDate: "asc" },
   });
 
-  // ✅ Serialize trips (convert Dates → strings)
   const plainTrips = trips.map((t) => ({
     ...t,
     startDate: t.startDate.toISOString(),
     endDate: t.endDate.toISOString(),
   }));
 
-  // ✅ Pass only serializable props
   return (
     <TripsClient userName={user.fullName ?? "Traveler"} trips={plainTrips} />
   );

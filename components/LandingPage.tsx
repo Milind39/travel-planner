@@ -1,23 +1,60 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Plane, Compass, Globe2, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { PricingTable, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import TiltCard from "./farmer-components/TiltCard";
 import CountUpStat from "./farmer-components/CountAnimation";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import Pricing from "./Pricing";
 
 export default function LandingPage() {
   const { isSignedIn } = useUser();
   const [loading, setLoading] = useState(false);
+  console.log(isSignedIn);
   const handleClick = () => {
     setLoading(true);
     // simulate async action (API/auth/redirect)
     setTimeout(() => setLoading(false), 2000);
   };
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("userNotFound") === "true") {
+      toast.error(
+        "User not found in database. Error connecting user to Database try again later"
+      );
+    }
+  }, [searchParams]);
+
+  // ***************
+  // Log User Data
+  // *************
+
+  // const [dbUser, setDbUser] = useState<any>(null);
+
+  // useEffect(() => {
+  //   if (isSignedIn) {
+  //     fetch("/api/check-user")
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         if (!data.error) {
+  //           console.log("DB User:", data);
+  //           setDbUser(data);
+  //         } else {
+  //           toast.error("Failed to load user from DB");
+  //         }
+  //       })
+  //       .catch(() => toast.error("Error connecting to backend"));
+  //   }
+  // }, [isSignedIn]);
+
   return (
     <div className="container mx-auto max-h-svh max-w-full pt-48 bg-gradient-to-t from-indigo-500/90 via-indigo-400 to-transparent text-foreground ">
       {/* Hero Section */}
@@ -34,7 +71,7 @@ export default function LandingPage() {
           Smart itineraries, budget-friendly suggestions, and unforgettable
           experiences—all in one travel planner.
         </p>
-        <Link href={isSignedIn ? "/trips" : "/sign-in"}>
+        <Link href={isSignedIn ? "/trips" : "/sign-up"}>
           <Button
             onClick={handleClick}
             className="button-hover bg-indigo-600 text-white hover:bg-indigo-600 px-6 py-2 rounded-lg flex items-center gap-2"
@@ -45,7 +82,7 @@ export default function LandingPage() {
                 Loading...
               </>
             ) : (
-              <>{isSignedIn ? "Start Planning Now" : "Login to Continue"}</>
+              <>{isSignedIn ? "Start Planning Now" : "Sign-Up to Continue"}</>
             )}
           </Button>
         </Link>
@@ -156,52 +193,13 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing */}
-      {/* <PricingPlans /> */}
       <section className="py-20 px-6 bg-indigo-50 text-black">
         <h2 className="text-3xl font-bold text-center mb-12">
           Choose Your Plan
         </h2>
 
-        <div className="max-w-4xl mx-auto">
-          <PricingTable
-            appearance={{
-              variables: {
-                colorPrimary: "#4f46e5",
-                colorBackground: "#ffffff",
-                borderRadius: "1rem",
-                fontFamily: "Inter, sans-serif",
-              },
-              elements: {
-                // Pricing Table
-                pricingTableContainer:
-                  "shadow-lg border border-gray-200 rounded-2xl",
-                pricingPlan:
-                  "hover:scale-[1.02] transition-transform duration-200",
-                buttonPrimary:
-                  "bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-lg px-6 py-2",
-                badge:
-                  "bg-indigo-100 text-indigo-600 rounded-md px-2 py-1 text-sm",
-
-                // Checkout Modal (Centered)
-                checkoutModal:
-                  "fixed inset-0 flex items-center justify-center bg-black/40 z-[9999]", // <--- overlay + high z-index
-                checkoutModalContent:
-                  "bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full relative",
-
-                checkoutModalHeader:
-                  "text-xl font-bold text-gray-900 mb-4 flex justify-between items-center",
-                checkoutModalCloseButton:
-                  "text-gray-500 hover:text-gray-700 transition-colors",
-                checkoutModalBody: "space-y-4 text-gray-700",
-                checkoutModalFooter: "mt-6 flex justify-end",
-                checkoutButton:
-                  "bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-semibold",
-                checkoutPlanTitle: "text-lg font-semibold text-indigo-600",
-                checkoutPlanPrice: "text-2xl font-bold text-gray-900",
-                checkoutPlanInterval: "text-sm text-gray-500",
-              },
-            }}
-          />
+        <div className="max-w-4xl mx-auto rounded-xl">
+          <Pricing />
         </div>
       </section>
 
@@ -256,8 +254,13 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-10 px-6 bg-gray-900 text-gray-300 text-center">
-        <p>© {new Date().getFullYear()} Travel Planner. All rights reserved.</p>
+      <footer className="bg-black/90 py-12">
+        <div className="container mx-auto px-4 text-center text-gray-200">
+          <p className="text-muted-foreground font-merriweather">
+            Built with 💻 - Crafted with precision - Powered by caffeine ☕ — by{" "}
+            <span className="text-indigo-500 italic">Milind</span>
+          </p>
+        </div>
       </footer>
     </div>
   );

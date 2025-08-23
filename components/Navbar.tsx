@@ -38,10 +38,10 @@ const Navbar = () => {
                 My Trips
               </Link>
               <Link
-                href="/globe"
+                href="/Pricing"
                 className="text-foreground hover:text-indigo-700 hover:scale-[1.02] transition-transform duration-100 hover:border rounded-full p-2"
               >
-                Globe
+                Pricing
               </Link>
               <UserButton afterSignOutUrl="/" />
             </SignedIn>

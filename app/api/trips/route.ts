@@ -13,12 +13,37 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = await req.formData();
-    const title = body.get("title") as string;
-    const description = body.get("description") as string;
-    const startDate = new Date(body.get("startDate") as string);
-    const endDate = new Date(body.get("endDate") as string);
-    const imageUrl = body.get("imageUrl") as string | null;
+ const contentType = req.headers.get("content-type") || "";
+
+    let title, description, startDate, endDate, imageUrl, aiPlan;
+
+    if (contentType.includes("application/json")) {
+      // 🟢 Case 1: AI Trip JSON
+      const body = await req.json();
+      console.log("Recieved Body",body);
+      title = body.title || body.destination;
+      description = body.description || body.interests;
+      startDate = body.startDate;
+      endDate = body.endDate;
+      imageUrl = body.imageUrl || null;
+      aiPlan = body; // store full JSON in aiPlan
+    } else if (contentType.includes("multipart/form-data")) {
+      // 🟢 Case 2: Manual Trip Form
+      const form = await req.formData();
+      title = form.get("title") as string;
+      description = form.get("description") as string;
+      startDate = form.get("startDate") as string;
+      endDate = form.get("endDate") as string;
+      imageUrl = form.get("imageUrl") as string | null;
+      const aiPlanRaw = form.get("aiPlan") as string | null;
+      aiPlan = aiPlanRaw ? JSON.parse(aiPlanRaw) : null;
+    } else {
+      return NextResponse.json(
+        { error: "Unsupported content type" },
+        { status: 400 }
+      );
+    }
+
 
     if (!title || !description || !startDate || !endDate) {
       return NextResponse.json(
@@ -27,14 +52,17 @@ export async function POST(req: Request) {
       );
     }
 
+    // Parse AI plan safely (if provided)  TODO
+
     const trip = await prisma.trip.create({
       data: {
         title,
         description,
-        startDate,
-        endDate,
+        startDate: new Date(`${startDate}T00:00:00Z`),
+        endDate: new Date(`${endDate}T00:00:00Z`),
         imageUrl: imageUrl || undefined,
         userId: user.id, // Prisma User.id
+        aiPlan,
       },
     });
 

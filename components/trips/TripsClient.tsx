@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { Cross, Loader2, Trash2 } from "lucide-react";
+import { Loader2, LockKeyhole, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "../ui/badge";
+import { useUser } from "@clerk/nextjs";
 
 type Trip = {
   id: string;
@@ -31,12 +32,35 @@ export default function TripsClient({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [deleted, setDeleted] = useState(false);
+  const { isSignedIn } = useUser();
 
   const handleNavigate = (type: "new" | "ai" | "create") => {
     setLoadingButton(type);
   };
 
   const searchParams = useSearchParams();
+
+  //************
+  // Fetch the subscription data
+  // **********
+
+  const [dbUser, setDbUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (isSignedIn) {
+      fetch("/api/subscription")
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data.error) {
+            console.log("DB User:", data);
+            setDbUser(data);
+          } else {
+            toast.error("Failed to load user from DB");
+          }
+        })
+        .catch(() => toast.error("Error connecting to backend"));
+    }
+  }, [isSignedIn]);
 
   useEffect(() => {
     if (searchParams.get("refresh") === "true") {
@@ -106,24 +130,45 @@ export default function TripsClient({
             </Button>
           </Link>
 
-          <Link href="/trips/ai-trip">
-            <Button
-              onClick={() => handleNavigate("ai")}
-              className="px-6 py-2 rounded-lg text-white font-medium 
-              bg-indigo-500
-             hover:bg-gradient-to-l from-indigo-200 via-indigo-400/20 to-indigo-800 
-             transition-all duration-300 shadow-md button-hover"
-            >
-              {loadingButton === "ai" ? (
-                <>
-                  <Loader2 className="animate-spin" />
-                  Trip...
-                </>
-              ) : (
-                "AI Trip"
-              )}
-            </Button>
-          </Link>
+          <Button
+            onClick={() => {
+              if (!dbUser?.isSubscribed) {
+                toast.error("Subscribe to unlock 🔒");
+                return;
+              }
+              handleNavigate("ai");
+              router.push("/trips/ai-trip");
+            }}
+            className={`
+    relative px-6 py-2 rounded-lg text-white font-medium 
+    bg-indigo-500
+    transition-all duration-300 shadow-md 
+    flex items-center justify-center
+    ${
+      dbUser?.isSubscribed
+        ? "hover:bg-gradient-to-l from-indigo-200 via-indigo-400/20 to-indigo-800 button-hover"
+        : "hover:bg-indigo-500"
+    }
+    ${!dbUser?.isSubscribed ? "opacity-50 cursor-not-allowed" : ""}
+  `}
+          >
+            {loadingButton === "ai" ? (
+              <>
+                <Loader2 className="animate-spin mr-2" />
+                Trip...
+              </>
+            ) : (
+              <>
+                {!dbUser?.isSubscribed && (
+                  <LockKeyhole
+                    className="text-white h-5 w-5 absolute left-1 top-1/2 -translate-y-1/2"
+                    style={{ zIndex: 10 }}
+                  />
+                )}
+                <span>AI Trip</span>
+              </>
+            )}
+          </Button>
         </div>
       </div>
 

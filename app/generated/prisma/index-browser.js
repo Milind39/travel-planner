@@ -128,7 +128,8 @@ exports.Prisma.UserScalarFieldEnum = {
   image: 'image',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  clerkUserId: 'clerkUserId'
+  clerkUserId: 'clerkUserId',
+  isSubscribed: 'isSubscribed'
 };
 
 exports.Prisma.AccountScalarFieldEnum = {

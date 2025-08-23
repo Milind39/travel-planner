@@ -17,10 +17,12 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   clerkUserId   String    @unique
+  isSubscribed  Boolean   @default(false) 
   accounts      Account[]
   sessions      Session[]
   trips         Trip[]
 }
+
 
 model Account {
   id                Int      @id @default(autoincrement())
@@ -77,6 +79,7 @@ model Trip {
 model Location {
   id            String   @id @default(cuid())
   locationTitle String
+  description   String
   lat           Float
   lng           Float
   tripId        String

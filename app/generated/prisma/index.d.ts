@@ -1435,6 +1435,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     clerkUserId: string | null
+    isSubscribed: boolean | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -1446,6 +1447,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     clerkUserId: string | null
+    isSubscribed: boolean | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -1457,6 +1459,7 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     clerkUserId: number
+    isSubscribed: number
     _all: number
   }
 
@@ -1470,6 +1473,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     clerkUserId?: true
+    isSubscribed?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -1481,6 +1485,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     clerkUserId?: true
+    isSubscribed?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -1492,6 +1497,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     clerkUserId?: true
+    isSubscribed?: true
     _all?: true
   }
 
@@ -1576,6 +1582,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     clerkUserId: string
+    isSubscribed: boolean
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -1604,6 +1611,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     clerkUserId?: boolean
+    isSubscribed?: boolean
     accounts?: boolean | User$accountsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     trips?: boolean | User$tripsArgs<ExtArgs>
@@ -1619,6 +1627,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     clerkUserId?: boolean
+    isSubscribed?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1630,6 +1639,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     clerkUserId?: boolean
+    isSubscribed?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -1641,9 +1651,10 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     clerkUserId?: boolean
+    isSubscribed?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "clerkUserId", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "clerkUserId" | "isSubscribed", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accounts?: boolean | User$accountsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
@@ -1669,6 +1680,7 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       clerkUserId: string
+      isSubscribed: boolean
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2103,6 +2115,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly clerkUserId: FieldRef<"User", 'String'>
+    readonly isSubscribed: FieldRef<"User", 'Boolean'>
   }
     
 
@@ -8118,7 +8131,8 @@ export namespace Prisma {
     image: 'image',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    clerkUserId: 'clerkUserId'
+    clerkUserId: 'clerkUserId',
+    isSubscribed: 'isSubscribed'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -8268,6 +8282,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -8324,6 +8345,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     clerkUserId?: StringFilter<"User"> | string
+    isSubscribed?: BoolFilter<"User"> | boolean
     accounts?: AccountListRelationFilter
     sessions?: SessionListRelationFilter
     trips?: TripListRelationFilter
@@ -8338,6 +8360,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     clerkUserId?: SortOrder
+    isSubscribed?: SortOrder
     accounts?: AccountOrderByRelationAggregateInput
     sessions?: SessionOrderByRelationAggregateInput
     trips?: TripOrderByRelationAggregateInput
@@ -8355,6 +8378,7 @@ export namespace Prisma {
     image?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    isSubscribed?: BoolFilter<"User"> | boolean
     accounts?: AccountListRelationFilter
     sessions?: SessionListRelationFilter
     trips?: TripListRelationFilter
@@ -8369,6 +8393,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     clerkUserId?: SortOrder
+    isSubscribed?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -8386,6 +8411,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     clerkUserId?: StringWithAggregatesFilter<"User"> | string
+    isSubscribed?: BoolWithAggregatesFilter<"User"> | boolean
   }
 
   export type AccountWhereInput = {
@@ -8748,6 +8774,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clerkUserId: string
+    isSubscribed?: boolean
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     trips?: TripCreateNestedManyWithoutUserInput
@@ -8762,6 +8789,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clerkUserId: string
+    isSubscribed?: boolean
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     trips?: TripUncheckedCreateNestedManyWithoutUserInput
@@ -8776,6 +8804,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clerkUserId?: StringFieldUpdateOperationsInput | string
+    isSubscribed?: BoolFieldUpdateOperationsInput | boolean
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     trips?: TripUpdateManyWithoutUserNestedInput
@@ -8790,6 +8819,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clerkUserId?: StringFieldUpdateOperationsInput | string
+    isSubscribed?: BoolFieldUpdateOperationsInput | boolean
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     trips?: TripUncheckedUpdateManyWithoutUserNestedInput
@@ -8804,6 +8834,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clerkUserId: string
+    isSubscribed?: boolean
   }
 
   export type UserUpdateManyMutationInput = {
@@ -8815,6 +8846,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clerkUserId?: StringFieldUpdateOperationsInput | string
+    isSubscribed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -8826,6 +8858,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clerkUserId?: StringFieldUpdateOperationsInput | string
+    isSubscribed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AccountCreateInput = {
@@ -9255,6 +9288,11 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type AccountListRelationFilter = {
     every?: AccountWhereInput
     some?: AccountWhereInput
@@ -9299,6 +9337,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     clerkUserId?: SortOrder
+    isSubscribed?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -9310,6 +9349,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     clerkUserId?: SortOrder
+    isSubscribed?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -9321,6 +9361,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     clerkUserId?: SortOrder
+    isSubscribed?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -9385,6 +9426,14 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -9787,6 +9836,10 @@ export namespace Prisma {
     set?: Date | string
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type AccountUpdateManyWithoutUserNestedInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -10043,6 +10096,11 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -10125,6 +10183,14 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -10425,6 +10491,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clerkUserId: string
+    isSubscribed?: boolean
     sessions?: SessionCreateNestedManyWithoutUserInput
     trips?: TripCreateNestedManyWithoutUserInput
   }
@@ -10438,6 +10505,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clerkUserId: string
+    isSubscribed?: boolean
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     trips?: TripUncheckedCreateNestedManyWithoutUserInput
   }
@@ -10467,6 +10535,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clerkUserId?: StringFieldUpdateOperationsInput | string
+    isSubscribed?: BoolFieldUpdateOperationsInput | boolean
     sessions?: SessionUpdateManyWithoutUserNestedInput
     trips?: TripUpdateManyWithoutUserNestedInput
   }
@@ -10480,6 +10549,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clerkUserId?: StringFieldUpdateOperationsInput | string
+    isSubscribed?: BoolFieldUpdateOperationsInput | boolean
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     trips?: TripUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -10493,6 +10563,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clerkUserId: string
+    isSubscribed?: boolean
     accounts?: AccountCreateNestedManyWithoutUserInput
     trips?: TripCreateNestedManyWithoutUserInput
   }
@@ -10506,6 +10577,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clerkUserId: string
+    isSubscribed?: boolean
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     trips?: TripUncheckedCreateNestedManyWithoutUserInput
   }
@@ -10535,6 +10607,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clerkUserId?: StringFieldUpdateOperationsInput | string
+    isSubscribed?: BoolFieldUpdateOperationsInput | boolean
     accounts?: AccountUpdateManyWithoutUserNestedInput
     trips?: TripUpdateManyWithoutUserNestedInput
   }
@@ -10548,6 +10621,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clerkUserId?: StringFieldUpdateOperationsInput | string
+    isSubscribed?: BoolFieldUpdateOperationsInput | boolean
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     trips?: TripUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -10589,6 +10663,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clerkUserId: string
+    isSubscribed?: boolean
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
   }
@@ -10602,6 +10677,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clerkUserId: string
+    isSubscribed?: boolean
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
   }
@@ -10660,6 +10736,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clerkUserId?: StringFieldUpdateOperationsInput | string
+    isSubscribed?: BoolFieldUpdateOperationsInput | boolean
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
   }
@@ -10673,6 +10750,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clerkUserId?: StringFieldUpdateOperationsInput | string
+    isSubscribed?: BoolFieldUpdateOperationsInput | boolean
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
   }

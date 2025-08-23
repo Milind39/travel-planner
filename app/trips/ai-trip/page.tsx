@@ -13,8 +13,10 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import DashBoardButton from "@/components/DashboardButton";
+import { useRouter } from "next/navigation";
 
 export default function AiTripPage() {
+  const router = useRouter();
   const [destination, setDestination] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -56,6 +58,7 @@ export default function AiTripPage() {
       });
 
       const data = await res.json();
+      console.log("Ai data :", data);
       if (data.destination && data.itinerary) {
         setTripPlan(data);
         setTrip({
@@ -75,9 +78,32 @@ export default function AiTripPage() {
     }
   };
 
-  const handleAddTrip = () => {
+  const handleAddTrip = async () => {
     if (!trip) return;
+
     console.log("Generated Trip:", trip);
+
+    try {
+      const res = await fetch("/api/trips", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(trip), // send full JSON
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Error saving trip:", err);
+        return;
+      }
+
+      const savedTrip = await res.json();
+      console.log("Trip saved successfully:", savedTrip);
+      router.push("/trips");
+    } catch (err) {
+      console.error("Request failed:", err);
+    }
   };
 
   return (
