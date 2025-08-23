@@ -161,7 +161,8 @@ export default function AiTripPage() {
           </div>
 
           <textarea
-            placeholder="What do you want to explore? (e.g., food, culture, hiking)"
+            placeholder={`+What do you want to explore? (e.g., food, culture, hiking),
++What is your Checkin location`}
             value={interests}
             onChange={(e) => setInterests(e.target.value)}
             className=" rounded w-full p-2 mb-4 focus:outline-none focus:ring-1 focus:ring-indigo-500 border-indigo-300 border "

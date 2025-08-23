@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 /**
  * Forward Geocode: address → lat,lng
  */
-async function geocodeAddress(address: string, email: string) {
+export async function geocodeAddress(address: string, email: string) {
   const response = await fetch(
     `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
       address
@@ -18,6 +18,8 @@ async function geocodeAddress(address: string, email: string) {
       },
     }
   );
+  console.log("Geocoding:", encodeURIComponent(address));
+
 
   const data = await response.json();
 
@@ -36,7 +38,7 @@ async function geocodeAddress(address: string, email: string) {
 /**
  * Reverse Geocode: lat,lng → address
  */
-async function reverseGeocode(lat: number, lng: number, email: string) {
+export async function reverseGeocode(lat: number, lng: number, email: string) {
   const response = await fetch(
     `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&email=${encodeURIComponent(
       email

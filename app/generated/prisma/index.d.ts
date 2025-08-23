@@ -7010,6 +7010,7 @@ export namespace Prisma {
   export type LocationMinAggregateOutputType = {
     id: string | null
     locationTitle: string | null
+    description: string | null
     lat: number | null
     lng: number | null
     tripId: string | null
@@ -7020,6 +7021,7 @@ export namespace Prisma {
   export type LocationMaxAggregateOutputType = {
     id: string | null
     locationTitle: string | null
+    description: string | null
     lat: number | null
     lng: number | null
     tripId: string | null
@@ -7030,6 +7032,7 @@ export namespace Prisma {
   export type LocationCountAggregateOutputType = {
     id: number
     locationTitle: number
+    description: number
     lat: number
     lng: number
     tripId: number
@@ -7054,6 +7057,7 @@ export namespace Prisma {
   export type LocationMinAggregateInputType = {
     id?: true
     locationTitle?: true
+    description?: true
     lat?: true
     lng?: true
     tripId?: true
@@ -7064,6 +7068,7 @@ export namespace Prisma {
   export type LocationMaxAggregateInputType = {
     id?: true
     locationTitle?: true
+    description?: true
     lat?: true
     lng?: true
     tripId?: true
@@ -7074,6 +7079,7 @@ export namespace Prisma {
   export type LocationCountAggregateInputType = {
     id?: true
     locationTitle?: true
+    description?: true
     lat?: true
     lng?: true
     tripId?: true
@@ -7171,6 +7177,7 @@ export namespace Prisma {
   export type LocationGroupByOutputType = {
     id: string
     locationTitle: string
+    description: string
     lat: number
     lng: number
     tripId: string
@@ -7200,6 +7207,7 @@ export namespace Prisma {
   export type LocationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     locationTitle?: boolean
+    description?: boolean
     lat?: boolean
     lng?: boolean
     tripId?: boolean
@@ -7211,6 +7219,7 @@ export namespace Prisma {
   export type LocationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     locationTitle?: boolean
+    description?: boolean
     lat?: boolean
     lng?: boolean
     tripId?: boolean
@@ -7222,6 +7231,7 @@ export namespace Prisma {
   export type LocationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     locationTitle?: boolean
+    description?: boolean
     lat?: boolean
     lng?: boolean
     tripId?: boolean
@@ -7233,6 +7243,7 @@ export namespace Prisma {
   export type LocationSelectScalar = {
     id?: boolean
     locationTitle?: boolean
+    description?: boolean
     lat?: boolean
     lng?: boolean
     tripId?: boolean
@@ -7240,7 +7251,7 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type LocationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "locationTitle" | "lat" | "lng" | "tripId" | "order" | "createdAt", ExtArgs["result"]["location"]>
+  export type LocationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "locationTitle" | "description" | "lat" | "lng" | "tripId" | "order" | "createdAt", ExtArgs["result"]["location"]>
   export type LocationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     trip?: boolean | TripDefaultArgs<ExtArgs>
   }
@@ -7259,6 +7270,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       locationTitle: string
+      description: string
       lat: number
       lng: number
       tripId: string
@@ -7690,6 +7702,7 @@ export namespace Prisma {
   interface LocationFieldRefs {
     readonly id: FieldRef<"Location", 'String'>
     readonly locationTitle: FieldRef<"Location", 'String'>
+    readonly description: FieldRef<"Location", 'String'>
     readonly lat: FieldRef<"Location", 'Float'>
     readonly lng: FieldRef<"Location", 'Float'>
     readonly tripId: FieldRef<"Location", 'String'>
@@ -8197,6 +8210,7 @@ export namespace Prisma {
   export const LocationScalarFieldEnum: {
     id: 'id',
     locationTitle: 'locationTitle',
+    description: 'description',
     lat: 'lat',
     lng: 'lng',
     tripId: 'tripId',
@@ -8704,6 +8718,7 @@ export namespace Prisma {
     NOT?: LocationWhereInput | LocationWhereInput[]
     id?: StringFilter<"Location"> | string
     locationTitle?: StringFilter<"Location"> | string
+    description?: StringFilter<"Location"> | string
     lat?: FloatFilter<"Location"> | number
     lng?: FloatFilter<"Location"> | number
     tripId?: StringFilter<"Location"> | string
@@ -8715,6 +8730,7 @@ export namespace Prisma {
   export type LocationOrderByWithRelationInput = {
     id?: SortOrder
     locationTitle?: SortOrder
+    description?: SortOrder
     lat?: SortOrder
     lng?: SortOrder
     tripId?: SortOrder
@@ -8729,6 +8745,7 @@ export namespace Prisma {
     OR?: LocationWhereInput[]
     NOT?: LocationWhereInput | LocationWhereInput[]
     locationTitle?: StringFilter<"Location"> | string
+    description?: StringFilter<"Location"> | string
     lat?: FloatFilter<"Location"> | number
     lng?: FloatFilter<"Location"> | number
     tripId?: StringFilter<"Location"> | string
@@ -8740,6 +8757,7 @@ export namespace Prisma {
   export type LocationOrderByWithAggregationInput = {
     id?: SortOrder
     locationTitle?: SortOrder
+    description?: SortOrder
     lat?: SortOrder
     lng?: SortOrder
     tripId?: SortOrder
@@ -8758,6 +8776,7 @@ export namespace Prisma {
     NOT?: LocationScalarWhereWithAggregatesInput | LocationScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Location"> | string
     locationTitle?: StringWithAggregatesFilter<"Location"> | string
+    description?: StringWithAggregatesFilter<"Location"> | string
     lat?: FloatWithAggregatesFilter<"Location"> | number
     lng?: FloatWithAggregatesFilter<"Location"> | number
     tripId?: StringWithAggregatesFilter<"Location"> | string
@@ -9170,6 +9189,7 @@ export namespace Prisma {
   export type LocationCreateInput = {
     id?: string
     locationTitle: string
+    description?: string
     lat: number
     lng: number
     order?: number
@@ -9180,6 +9200,7 @@ export namespace Prisma {
   export type LocationUncheckedCreateInput = {
     id?: string
     locationTitle: string
+    description?: string
     lat: number
     lng: number
     tripId: string
@@ -9190,6 +9211,7 @@ export namespace Prisma {
   export type LocationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     locationTitle?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     lat?: FloatFieldUpdateOperationsInput | number
     lng?: FloatFieldUpdateOperationsInput | number
     order?: IntFieldUpdateOperationsInput | number
@@ -9200,6 +9222,7 @@ export namespace Prisma {
   export type LocationUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     locationTitle?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     lat?: FloatFieldUpdateOperationsInput | number
     lng?: FloatFieldUpdateOperationsInput | number
     tripId?: StringFieldUpdateOperationsInput | string
@@ -9210,6 +9233,7 @@ export namespace Prisma {
   export type LocationCreateManyInput = {
     id?: string
     locationTitle: string
+    description?: string
     lat: number
     lng: number
     tripId: string
@@ -9220,6 +9244,7 @@ export namespace Prisma {
   export type LocationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     locationTitle?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     lat?: FloatFieldUpdateOperationsInput | number
     lng?: FloatFieldUpdateOperationsInput | number
     order?: IntFieldUpdateOperationsInput | number
@@ -9229,6 +9254,7 @@ export namespace Prisma {
   export type LocationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     locationTitle?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     lat?: FloatFieldUpdateOperationsInput | number
     lng?: FloatFieldUpdateOperationsInput | number
     tripId?: StringFieldUpdateOperationsInput | string
@@ -9723,6 +9749,7 @@ export namespace Prisma {
   export type LocationCountOrderByAggregateInput = {
     id?: SortOrder
     locationTitle?: SortOrder
+    description?: SortOrder
     lat?: SortOrder
     lng?: SortOrder
     tripId?: SortOrder
@@ -9739,6 +9766,7 @@ export namespace Prisma {
   export type LocationMaxOrderByAggregateInput = {
     id?: SortOrder
     locationTitle?: SortOrder
+    description?: SortOrder
     lat?: SortOrder
     lng?: SortOrder
     tripId?: SortOrder
@@ -9749,6 +9777,7 @@ export namespace Prisma {
   export type LocationMinOrderByAggregateInput = {
     id?: SortOrder
     locationTitle?: SortOrder
+    description?: SortOrder
     lat?: SortOrder
     lng?: SortOrder
     tripId?: SortOrder
@@ -10629,6 +10658,7 @@ export namespace Prisma {
   export type LocationCreateWithoutTripInput = {
     id?: string
     locationTitle: string
+    description?: string
     lat: number
     lng: number
     order?: number
@@ -10638,6 +10668,7 @@ export namespace Prisma {
   export type LocationUncheckedCreateWithoutTripInput = {
     id?: string
     locationTitle: string
+    description?: string
     lat: number
     lng: number
     order?: number
@@ -10709,6 +10740,7 @@ export namespace Prisma {
     NOT?: LocationScalarWhereInput | LocationScalarWhereInput[]
     id?: StringFilter<"Location"> | string
     locationTitle?: StringFilter<"Location"> | string
+    description?: StringFilter<"Location"> | string
     lat?: FloatFilter<"Location"> | number
     lng?: FloatFilter<"Location"> | number
     tripId?: StringFilter<"Location"> | string
@@ -10967,6 +10999,7 @@ export namespace Prisma {
   export type LocationCreateManyTripInput = {
     id?: string
     locationTitle: string
+    description?: string
     lat: number
     lng: number
     order?: number
@@ -10976,6 +11009,7 @@ export namespace Prisma {
   export type LocationUpdateWithoutTripInput = {
     id?: StringFieldUpdateOperationsInput | string
     locationTitle?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     lat?: FloatFieldUpdateOperationsInput | number
     lng?: FloatFieldUpdateOperationsInput | number
     order?: IntFieldUpdateOperationsInput | number
@@ -10985,6 +11019,7 @@ export namespace Prisma {
   export type LocationUncheckedUpdateWithoutTripInput = {
     id?: StringFieldUpdateOperationsInput | string
     locationTitle?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     lat?: FloatFieldUpdateOperationsInput | number
     lng?: FloatFieldUpdateOperationsInput | number
     order?: IntFieldUpdateOperationsInput | number
@@ -10994,6 +11029,7 @@ export namespace Prisma {
   export type LocationUncheckedUpdateManyWithoutTripInput = {
     id?: StringFieldUpdateOperationsInput | string
     locationTitle?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
     lat?: FloatFieldUpdateOperationsInput | number
     lng?: FloatFieldUpdateOperationsInput | number
     order?: IntFieldUpdateOperationsInput | number

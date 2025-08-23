@@ -179,6 +179,7 @@ exports.Prisma.TripScalarFieldEnum = {
 exports.Prisma.LocationScalarFieldEnum = {
   id: 'id',
   locationTitle: 'locationTitle',
+  description: 'description',
   lat: 'lat',
   lng: 'lng',
   tripId: 'tripId',

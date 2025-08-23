@@ -15,7 +15,7 @@ export async function POST(req: Request) {
       {
         "destination": string,
         "startDate": string,
-        "endDate": string,
+        "endDate": string,  
         "itinerary": [
           {
             "day": number,
@@ -24,6 +24,11 @@ export async function POST(req: Request) {
           }
         ]
       }
+
+      Important instructions:
+      - If a day includes multiple locations in the title, use '&' between them, NOT the word 'and'.
+      - Do NOT add extra text outside of the JSON.
+      - Keep titles concise.
       Fill it for:
       Destination: ${destination}
       Dates: ${startDate} to ${endDate}

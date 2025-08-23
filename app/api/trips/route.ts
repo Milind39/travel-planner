@@ -1,34 +1,34 @@
 import { NextResponse } from "next/server";
 import { checkUser } from "@/lib/checkUser";
 import { prisma } from "@/lib/prisma";
+import { geocodeAddress } from "@/lib/actions/add-location";
 
 export async function POST(req: Request) {
   try {
     const user = await checkUser();
 
     if (!user) {
+      console.error("User not logged in or creation failed");
       return NextResponse.json(
         { error: "User not logged in or creation failed" },
         { status: 401 }
       );
     }
 
- const contentType = req.headers.get("content-type") || "";
+    const contentType = req.headers.get("content-type") || "";
 
     let title, description, startDate, endDate, imageUrl, aiPlan;
 
     if (contentType.includes("application/json")) {
-      // 🟢 Case 1: AI Trip JSON
       const body = await req.json();
-      console.log("Recieved Body",body);
+      console.log("Received Body:", body);
       title = body.title || body.destination;
       description = body.description || body.interests;
       startDate = body.startDate;
       endDate = body.endDate;
       imageUrl = body.imageUrl || null;
-      aiPlan = body; // store full JSON in aiPlan
+      aiPlan = body; // store full JSON
     } else if (contentType.includes("multipart/form-data")) {
-      // 🟢 Case 2: Manual Trip Form
       const form = await req.formData();
       title = form.get("title") as string;
       description = form.get("description") as string;
@@ -38,22 +38,22 @@ export async function POST(req: Request) {
       const aiPlanRaw = form.get("aiPlan") as string | null;
       aiPlan = aiPlanRaw ? JSON.parse(aiPlanRaw) : null;
     } else {
+      console.error("Unsupported content type:", contentType);
       return NextResponse.json(
         { error: "Unsupported content type" },
         { status: 400 }
       );
     }
 
-
     if (!title || !description || !startDate || !endDate) {
+      console.error("Missing required fields");
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    // Parse AI plan safely (if provided)  TODO
-
+    // Create Trip
     const trip = await prisma.trip.create({
       data: {
         title,
@@ -61,42 +61,59 @@ export async function POST(req: Request) {
         startDate: new Date(`${startDate}T00:00:00Z`),
         endDate: new Date(`${endDate}T00:00:00Z`),
         imageUrl: imageUrl || undefined,
-        userId: user.id, // Prisma User.id
+        userId: user.id,
         aiPlan,
       },
     });
+    console.log("Trip created successfully:", trip.id);
 
-    return NextResponse.json(trip, { status: 201 });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json(
-      { error: "Failed to create trip" },
-      { status: 500 }
-    );
-  }
-}
+    // Populate Locations if aiPlan exists
+    if (aiPlan) {
+      const parsedPlan = typeof aiPlan === "string" ? JSON.parse(aiPlan) : aiPlan;
 
-export async function GET() {
-  try {
-    const user = await checkUser();
+      // handle nested `plan` string
+      const planObject =
+        typeof parsedPlan.plan === "string" ? JSON.parse(parsedPlan.plan) : parsedPlan;
 
-    if (!user) {
-      return NextResponse.json(
-        { error: "User not logged in" },
-        { status: 401 }
-      );
+      if (planObject.itinerary && Array.isArray(planObject.itinerary)) {
+        for (const day of planObject.itinerary) {
+          let lat = 0;
+          let lng = 0;
+
+          try {
+            const geo = await geocodeAddress(day.title, user.email);
+            lat = geo.lat;
+            lng = geo.lng;
+            if (lat && lng) {
+              console.log(`Geocoding success: ${day.title} → ${lat},${lng}`);
+            } else {
+              console.warn(`Geocoding failed for: ${day.title}`);
+            }
+
+          } catch (err) {
+            console.warn(`Geocoding failed for "${day.title}":`, err);
+          }
+          await prisma.location.create({
+            data: {
+              tripId: trip.id,
+              locationTitle: day.title,
+              description: day.activities.join("\n"),
+              order: day.day,
+              lat: lat,
+              lng: lng,
+            },
+          });
+          console.log(`Location added: Day ${day.day} - ${day.title}`);
+        }
+      }
     }
 
-    const trips = await prisma.trip.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: "desc" },
-    });
-
-    return NextResponse.json(trips);
+    console.log("All locations added successfully for trip:", trip.id);
+    return NextResponse.json({ success: true, trip }, { status: 201 });
   } catch (err) {
-    console.error(err);
+    console.error("Failed to create trip:", err);
     return NextResponse.json(
-      { error: "Failed to fetch trips" },
+      { error: "Failed to create trip" },
       { status: 500 }
     );
   }

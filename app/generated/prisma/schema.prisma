@@ -78,6 +78,7 @@ model Trip {
 model Location {
   id            String   @id @default(cuid())
   locationTitle String
+  description   String   @default("No description available")
   lat           Float
   lng           Float
   tripId        String
