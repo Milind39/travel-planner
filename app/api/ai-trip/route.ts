@@ -9,30 +9,38 @@ export async function POST(req: Request) {
     const { destination, startDate, endDate, interests } = await req.json();
 
     const prompt = `
-      You are a travel planner.
-      Respond ONLY with valid JSON and nothing else.
-      The JSON must strictly follow this format:
-      {
-        "destination": string,
-        "startDate": string,
-        "endDate": string,  
-        "itinerary": [
-          {
-            "day": number,
-            "title": string,
-            "activities": string[]
-          }
-        ]
-      }
+    You are a travel planner.  
+Respond ONLY with valid JSON and nothing else.  
 
-      Important instructions:
-      - If a day includes multiple locations in the title, use '&' between them, NOT the word 'and'.
-      - Do NOT add extra text outside of the JSON.
-      - Keep titles concise.
-      Fill it for:
-      Destination: ${destination}
-      Dates: ${startDate} to ${endDate}
-      Interests: ${interests}
+The JSON must strictly follow this format:
+{
+  "destination": string,
+  "startDate": string,
+  "endDate": string,  
+  "itinerary": [
+    {
+      "day": number,
+      "title": string,       // MUST be a real, geocodable place name (e.g., Eiffel Tower, Louvre Museum)
+      "activities": string[]
+    }
+  ]
+}
+
+Important rules:
+- Titles must be official place names that can be geocoded (e.g., "Eiffel Tower", "Louvre Museum", "Uluwatu Temple").  
+- If multiple stops are included in one day, combine them using '&' (e.g., "Eiffel Tower & Louvre Museum").  
+- Do NOT use vague titles like "Old Town", "City Museum", "Central Beach" unless they are the actual official name of the place.
+- Each itinerary 'title' must be a single real place name only (no '&' combining multiple places).  
+- If multiple stops are in a day, create separate itinerary items for each stop.
+- Do NOT add arrival, check-in, or departure as itinerary items.  
+- Keep titles concise and activities relevant to the place.  
+- Respond only with JSON, no extra text.  
+
+Fill it for:
+Destination: ${destination}  
+Dates: ${startDate} to ${endDate}  
+Interests: ${interests}
+
     `;
 
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });

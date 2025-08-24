@@ -176,7 +176,14 @@ export default function AiTripPage() {
                 variant="default"
                 className="flex-1 bg-emerald-600 hover:bg-emerald-600/90 text-foreground"
               >
-                Add Trip
+                {" "}
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin h-4 w-4" /> Adding...
+                  </>
+                ) : (
+                  "Add Trip"
+                )}
               </Button>
               <Button
                 onClick={() => {

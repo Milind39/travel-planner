@@ -19,9 +19,9 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useId, useState } from "react";
+import { useId, useState, memo } from "react";
 import { motion } from "framer-motion";
-import { GripVertical } from "lucide-react";
+import { ChevronDown, ChevronUp, GripVertical, MapPin } from "lucide-react";
 import { createPortal } from "react-dom";
 
 interface SortableItineraryProps {
@@ -29,7 +29,7 @@ interface SortableItineraryProps {
   tripId: string;
 }
 
-function SortableItem({ item }: { item: Location }) {
+const SortableItem = memo(({ item }: { item: Location }) => {
   const {
     attributes,
     listeners,
@@ -44,35 +44,109 @@ function SortableItem({ item }: { item: Location }) {
     transition,
   };
 
+  const [showDescription, setShowDescription] = useState(false);
+
+  const toggleDescription = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDescription((prev) => !prev);
+  };
+
   return (
     <motion.div
       ref={setNodeRef}
       style={style}
-      layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: -10 }}
-      exit={{ opacity: 0, y: -10 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
       {...attributes}
       {...listeners}
-      className={`p-4 rounded-md flex justify-between items-center bg-indigo-400/80 backdrop-blur transition-all shadow-md hover:shadow-xl hover:border-2 hover:border-indigo-800 cursor-grab ${
-        isDragging ? "opacity-50 scale-105 ring-2 ring-indigo-500" : ""
-      }`}
+      className={`
+        container overflow-hidden rounded-xl bg-indigo-500 backdrop-blur-sm
+        border border-gray-300 shadow-sm hover:shadow-md
+        transition-all duration-300 cursor-grab active:cursor-grabbing
+        ${
+          isDragging
+            ? "opacity-75 scale-[0.98] shadow-lg ring-2 ring-indigo-400"
+            : ""
+        }
+        ${showDescription ? "pb-6" : "pb-0"}
+      `}
     >
-      <div className="flex items-center gap-3">
-        <GripVertical className="text-black/60" />
-        <div>
-          <h4 className="font-semibold text-xl">{item.locationTitle}</h4>
-          <p className="text-sm text-black truncate max-w-xs">
-            {`Latitude: ${item.lat}, Longitude: ${item.lng}`}
-          </p>
+      {/* Main Content */}
+      <div className="p-5">
+        <div className="flex justify-between items-center">
+          {/* Left side: Grip, Title, and Toggle Button */}
+          <div className="flex items-center gap-3 flex-1">
+            <GripVertical className="text-foreground w-5 h-5 flex-shrink-0" />
+
+            <div className="flex items-center gap-3 flex-1">
+              <h4 className="font-semibold text-lg text-foreground truncate">
+                {item.locationTitle}
+              </h4>
+
+              <button
+                onClick={toggleDescription}
+                className="
+                  flex items-center justify-center w-8 h-8 rounded-lg
+                  bg-indigo-300/50 hover:bg-indigo-300
+                  border border-gray-400 transition-all duration-200
+                  hover:scale-105 active:scale-95
+                "
+                aria-label={
+                  showDescription ? "Hide description" : "Show description"
+                }
+              >
+                {showDescription ? (
+                  <ChevronUp className="w-4 h-4 text-foreground" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-foreground" />
+                )}
+              </button>
+            </div>
+          </div>
+          {/* Right side: Day number */}
+          <div className="flex items-center gap-2 ml-4">
+            <span className="text-sm text-foreground font-medium">Day</span>
+            <span className="text-2xl font-bold text-foreground bg-indigo-300/30 px-3 py-1 rounded-lg">
+              {item.order}
+            </span>
+          </div>
         </div>
       </div>
-      <div className="text-sm">
-        Day <span className="font-semibold text-2xl">{item.order}</span>
-      </div>
+
+      {/* Expandable Description */}
+      <motion.div
+        initial={false}
+        animate={{
+          height: showDescription ? "auto" : 0,
+          opacity: showDescription ? 1 : 0,
+        }}
+        transition={{ duration: 0.15, ease: "easeInOut" }}
+        className="overflow-hidden px-5 pb-4"
+      >
+        <div className="border-t pt-3">
+          <ul className="space-y-2">
+            {item.description
+              .split(". ")
+              .filter(Boolean)
+              .map((sentence, index) => (
+                <li
+                  key={index}
+                  className="flex items-start gap-2 text-sm text-foreground"
+                >
+                  <MapPin className="w-4 h-4 mt-1 flex-shrink-0" />
+                  <span className="leading-relaxed">
+                    {sentence.trim()}
+                    {sentence.includes(".") ? "" : "."}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        </div>
+      </motion.div>
     </motion.div>
   );
-}
+});
 
 export default function SortableItinerary({
   locations,
@@ -83,11 +157,7 @@ export default function SortableItinerary({
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -115,60 +185,60 @@ export default function SortableItinerary({
   };
 
   return (
-    <DndContext
-      id={id}
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragStart={({ active }) => setActiveId(active.id as string)}
-      onDragEnd={handleDragEnd}
-    >
-      <SortableContext
-        items={localLocation.map((loc) => loc.id)}
-        strategy={verticalListSortingStrategy}
+    <div className="max-w-full">
+      {" "}
+      {/* Header */}
+      <DndContext
+        id={id}
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={({ active }) => setActiveId(active.id as string)}
+        onDragEnd={handleDragEnd}
+        modifiers={[restrictToWindowEdges]}
       >
-        <div className="space-y-3">
-          {localLocation.map((item) => (
-            <SortableItem key={item.id} item={item} />
-          ))}
-        </div>
-      </SortableContext>
+        <SortableContext
+          items={localLocation.map((loc) => loc.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="space-y-4">
+            {localLocation.map((item) => (
+              <SortableItem key={item.id} item={item} />
+            ))}
+          </div>
+        </SortableContext>
 
-      {createPortal(
-        <DragOverlay modifiers={[restrictToWindowEdges]}>
-          {activeId ? (
-            <motion.div
-              layout
-              className="p-4 rounded-md flex justify-between items-center bg-indigo-600 shadow-2xl text-white"
-            >
-              <div className="flex items-center gap-3">
-                <GripVertical className="text-white/70" />
-                <div>
-                  <h4 className="font-semibold text-xl">
-                    {
-                      localLocation.find((i) => i.id === activeId)
-                        ?.locationTitle
-                    }
-                  </h4>
-                  <p className="text-sm">
-                    {`Latitude: ${
+        {createPortal(
+          <DragOverlay>
+            {activeId && (
+              <motion.div className="p-4 rounded-md flex justify-between items-center bg-indigo-600 shadow-2xl text-foreground">
+                <div className="flex items-center gap-3">
+                  <GripVertical className="text-foreground/70" />
+                  <div>
+                    <h4 className="font-semibold text-xl">
+                      {
+                        localLocation.find((i) => i.id === activeId)
+                          ?.locationTitle
+                      }
+                    </h4>
+                    <p className="text-sm">{`Latitude: ${
                       localLocation.find((i) => i.id === activeId)?.lat
                     }, Longitude: ${
                       localLocation.find((i) => i.id === activeId)?.lng
-                    }`}
-                  </p>
+                    }`}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="text-sm">
-                Day{" "}
-                <span className="font-semibold text-2xl">
-                  {localLocation.find((i) => i.id === activeId)?.order}
-                </span>
-              </div>
-            </motion.div>
-          ) : null}
-        </DragOverlay>,
-        document.body
-      )}
-    </DndContext>
+                <div className="text-sm">
+                  Day{" "}
+                  <span className="font-semibold text-2xl">
+                    {localLocation.find((i) => i.id === activeId)?.order}
+                  </span>
+                </div>
+              </motion.div>
+            )}
+          </DragOverlay>,
+          document.body
+        )}
+      </DndContext>
+    </div>
   );
 }

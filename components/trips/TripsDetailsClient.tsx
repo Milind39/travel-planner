@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { Location, Trip } from "@/app/generated/prisma";
 import Image from "next/image";
-import { Calendar, MapPin, Plus } from "lucide-react";
+import { Calendar, ChevronLeft, Loader2, MapPin, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import SortableItinerary from "@/components/sortable-itinerary";
@@ -25,6 +25,7 @@ const Map = dynamic(() => import("../map"), {
 
 export default function TripDetailClient({ trip }: TripDetailClientProps) {
   const [activeTab, setActiveTab] = useState("overview");
+  const [loading, setLoading] = useState(false);
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8 pt-24">
@@ -66,26 +67,41 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
       </div>
       <div className="bg-black/40 backdrop-blur-md border-0 text-foreground p-6 shadow rounded-lg">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-8 bg-gray-500 pl-0 pr-0">
-            <TabsTrigger
-              value="overview"
-              className="text-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white"
-            >
-              Overview
-            </TabsTrigger>
-            <TabsTrigger
-              value="itinerary"
-              className="text-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white"
-            >
-              Itinerary
-            </TabsTrigger>
-            <TabsTrigger
-              value="map"
-              className="text-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white"
-            >
-              Map
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex items-center justify-between mb-8">
+            <TabsList className="bg-gray-500 pl-0 pr-0">
+              <TabsTrigger
+                value="overview"
+                className="text-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white"
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger
+                value="itinerary"
+                className="text-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white"
+              >
+                Itinerary
+              </TabsTrigger>
+              <TabsTrigger
+                value="map"
+                className="text-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white"
+              >
+                Map
+              </TabsTrigger>
+            </TabsList>
+
+            <div className="text-center">
+              <Link href="/trips" onClick={() => setLoading(true)}>
+                <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg">
+                  {loading ? (
+                    <Loader2 className="animate-spin h-4 w-4" />
+                  ) : (
+                    <ChevronLeft />
+                  )}
+                  Back to Trips
+                </Button>
+              </Link>
+            </div>
+          </div>
 
           <TabsContent value="overview" className="space-y-6 text-foreground">
             <div className="grid md:grid-cols-2 gap-6">
@@ -145,8 +161,16 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
           </TabsContent>
 
           <TabsContent value="itinerary" className="space-y-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold"> Full Itinerary</h2>
+            <div className="flex justify-between items-center mb-4 pb-3">
+              <h2 className="text-3xl font-semibold">
+                {" "}
+                Full Itinerary
+                <span> </span>
+                <span className="text-foreground-text-light text-lg max-w-2xl mx-auto">
+                  (Drag and drop to reorder your destinations. Click the arrow
+                  to view detailed descriptions)
+                </span>
+              </h2>
             </div>
 
             {trip.locations.length === 0 ? (
@@ -183,14 +207,6 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
             )}
           </TabsContent>
         </Tabs>
-      </div>
-      <div className="text-center">
-        <Link href={`/trips`}>
-          <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg">
-            {" "}
-            Back to Trips
-          </Button>
-        </Link>
       </div>
     </div>
   );

@@ -8,31 +8,28 @@ import { redirect } from "next/navigation";
  * Forward Geocode: address → lat,lng
  */
 export async function geocodeAddress(address: string, email: string) {
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-      address
-    )}&email=${encodeURIComponent(email)}`,
-    {
-      headers: {
-        "User-Agent": `YourAppName/1.0 (${email})`,
-      },
-    }
-  );
+const response = await fetch(
+  `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&namedetails=1&q=${encodeURIComponent(
+    address
+  )}&email=${encodeURIComponent(email)}`,
+  { headers: { "User-Agent": `YourAppName/1.0 (${email})` } }
+);
+
   console.log("Geocoding:", encodeURIComponent(address));
 
 
-  const data = await response.json();
+const data = await response.json();
+if (!data?.length) throw new Error("Address not found");
 
-  if (!data?.length) {
-    throw new Error("Address not found");
-  }
+const place = data[0];
+const name = place.namedetails?.name || place.display_name.split(",")[0];
 
-  const { lat, lon, display_name } = data[0];
-  return {
-    lat: parseFloat(lat),
-    lng: parseFloat(lon),
-    locationTitle: display_name,
-  };
+return {
+  lat: parseFloat(place.lat),
+  lng: parseFloat(place.lon),
+  locationTitle: name, // only the official place name
+};
+
 }
 
 /**

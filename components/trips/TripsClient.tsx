@@ -29,7 +29,7 @@ export default function TripsClient({
     "new" | "ai" | "create" | null
   >(null);
 
-  const [loading, setLoading] = useState(false);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
   const router = useRouter();
   const [deleted, setDeleted] = useState(false);
   const { isSignedIn } = useUser();
@@ -85,7 +85,7 @@ export default function TripsClient({
 
   const handleDelete = async (tripId: string) => {
     try {
-      setLoading(true);
+      setLoadingId(tripId);
 
       const res = await fetch(`/api/trips/${tripId}`, {
         method: "DELETE",
@@ -102,7 +102,7 @@ export default function TripsClient({
       toast.error("Something went wrong ❌");
       console.error(err);
     } finally {
-      setLoading(false);
+      setLoadingId(null);
     }
   };
 
@@ -225,21 +225,23 @@ export default function TripsClient({
             {sortedTrips.slice(0, 6).map((trip) => (
               <Card
                 key={trip.id}
-                className="button-hover border-0 transition-transform duration-300 hover:scale-105 hover:shadow-lg bg-indigo-300 text-black"
+                onClick={() => router.push(`/trips/${trip.id}`)}
+                className="button-hover border-0 transition-transform duration-300 hover:scale-105 hover:shadow-lg bg-indigo-300 text-black cursor-pointer"
               >
                 <CardHeader>
                   <div className="flex justify-between">
-                    <Link href={`/trips/${trip.id}`} className="flex-1">
-                      <CardTitle className="line-clamp-1 text-2xl cursor-pointer">
-                        {trip.title.toUpperCase()}
-                      </CardTitle>
-                    </Link>
+                    <CardTitle className="line-clamp-1 text-2xl">
+                      {trip.title.toUpperCase()}
+                    </CardTitle>
                     <Badge
-                      className="items-center bg-red-400 hover:bg-red-600 text-white ml-3 cursor-pointer"
-                      onClick={() => handleDelete(trip.id)}
-                      variant={"destructive"}
+                      className="items-center bg-red-400 hover:bg-red-600 text-white ml-3 cursor-pointer z-10"
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent card click
+                        handleDelete(trip.id);
+                      }}
+                      variant="destructive"
                     >
-                      {loading ? (
+                      {loadingId === trip.id ? (
                         <Loader2 className="animate-spin" />
                       ) : (
                         <Trash2 />

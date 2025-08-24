@@ -31,7 +31,7 @@ export default function Map({ itineraries }: MapProps) {
     <MapContainer
       key={itineraries ? JSON.stringify(itineraries) : "default"}
       center={center}
-      zoom={itineraries.length > 0 ? 6 : 13} // ✅ zoomed in if data exists
+      zoom={itineraries.length > 0 ? 12 : 13} // ✅ zoomed in if data exists
       style={{ width: "100%", height: "100%" }}
     >
       {/* ✅ OpenStreetMap tiles (same as vanilla example) */}
