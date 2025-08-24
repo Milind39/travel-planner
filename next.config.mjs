@@ -1,9 +1,10 @@
+// next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   eslint: {
-    // Warning: only use this if you understand the risks
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true, // optional if you want to bypass lint during build
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig; // <-- use export default
