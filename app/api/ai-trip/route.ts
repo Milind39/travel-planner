@@ -21,7 +21,11 @@ The JSON must strictly follow this format:
     {
       "day": number,
       "title": string,       // MUST be a real, geocodable place name (e.g., Eiffel Tower, Louvre Museum)
-      "activities": string[]
+      "activities": [
+      "string",
+        "string",
+        "Budget: ...",
+        "Local expenses: ..."]
     }
   ]
 }
@@ -30,9 +34,11 @@ Important rules:
 - Titles must be official place names that can be geocoded (e.g., "Eiffel Tower", "Louvre Museum", "Uluwatu Temple").  
 - If multiple stops are included in one day, combine them using '&' (e.g., "Eiffel Tower & Louvre Museum").  
 - Do NOT use vague titles like "Old Town", "City Museum", "Central Beach" unless they are the actual official name of the place.
+- Give an Approx Budget Plan for that Particular 
 - Each itinerary 'title' must be a single real place name only (no '&' combining multiple places).  
 - If multiple stops are in a day, create separate itinerary items for each stop.
-- Do NOT add arrival, check-in, or departure as itinerary items.  
+- Do NOT add arrival, check-in, or departure as itinerary items.
+- The last two activity strings must always be "Budget: ..." and "Local expenses: ..." for that place.  
 - Keep titles concise and activities relevant to the place.  
 - Respond only with JSON, no extra text.  
 

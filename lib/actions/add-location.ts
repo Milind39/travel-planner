@@ -29,7 +29,6 @@ return {
   lng: parseFloat(place.lon),
   locationTitle: name, // only the official place name
 };
-
 }
 
 /**
@@ -79,16 +78,27 @@ export async function addLocation(formData: FormData, tripId: string) {
   let location;
   const latLngRegex = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
 
-  if (latLngRegex.test(rawInput)) {
-    // ✅ User entered lat,lng → reverse geocode
-    const [latStr, lngStr] = rawInput.split(",");
-    const lat = parseFloat(latStr.trim());
-    const lng = parseFloat(lngStr.trim());
+  try {
+    if (latLngRegex.test(rawInput)) {
+      // ✅ User entered lat,lng → reverse geocode
+      const [latStr, lngStr] = rawInput.split(",");
+      const lat = parseFloat(latStr.trim());
+      const lng = parseFloat(lngStr.trim());
 
-    location = await reverseGeocode(lat, lng, email);
-  } else {
-    // ✅ User entered address → forward geocode
-    location = await geocodeAddress(rawInput, email);
+      location = await reverseGeocode(lat, lng, email);
+    } else {
+      // ✅ User entered address → forward geocode
+      location = await geocodeAddress(rawInput, email);
+    }
+  } catch (err) {
+    console.warn("Could not geocode address, skipping:", rawInput, err);
+    return; // skip this location instead of throwing
+  }
+
+  // ✅ Skip adding if lat/lng is missing
+  if (!location?.lat || !location?.lng) {
+    console.warn("Invalid lat/lng, skipping:", location);
+    return;
   }
 
   const count = await prisma.location.count({

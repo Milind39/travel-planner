@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/carousel";
 import DashBoardButton from "@/components/DashboardButton";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function AiTripPage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function AiTripPage() {
       activities: string[];
     }[];
   } | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<null | "generate" | "add">(null);
   const [trip, setTrip] = useState<{
     destination: string;
     startDate: string;
@@ -41,7 +42,7 @@ export default function AiTripPage() {
   } | null>(null);
 
   const handleGenerate = async () => {
-    setLoading(true);
+    setLoading("generate"); // mark generate button as loading
     setTripPlan(null);
     setTrip(null);
 
@@ -68,13 +69,16 @@ export default function AiTripPage() {
           interests,
           plan: JSON.stringify(data),
         });
+        toast.success("Trip plan generated successfully!");
       } else {
         console.error("Invalid plan format:", data);
+        toast.error("Failed to generate trip plan.");
       }
     } catch (err) {
       console.error(err);
+      toast.error("Error generating trip plan.");
     } finally {
-      setLoading(false);
+      setLoading(null);
     }
   };
 
@@ -95,14 +99,17 @@ export default function AiTripPage() {
       if (!res.ok) {
         const err = await res.json();
         console.error("Error saving trip:", err);
+        toast.error("Failed to save trip.");
         return;
       }
 
       const savedTrip = await res.json();
       console.log("Trip saved successfully:", savedTrip);
+      toast.success("Trip added to database successfully!");
       router.push("/trips");
     } catch (err) {
       console.error("Request failed:", err);
+      toast.error("Error saving trip.");
     }
   };
 
@@ -177,7 +184,7 @@ export default function AiTripPage() {
                 className="flex-1 bg-emerald-600 hover:bg-emerald-600/90 text-foreground"
               >
                 {" "}
-                {loading ? (
+                {loading === "add" ? (
                   <>
                     <Loader2 className="animate-spin h-4 w-4" /> Adding...
                   </>
@@ -199,11 +206,10 @@ export default function AiTripPage() {
           ) : (
             <Button
               onClick={handleGenerate}
-              disabled={loading}
               variant="default"
               className="w-full bg-indigo-500 text-white hover:bg-indigo-400 flex items-center justify-center gap-2"
             >
-              {loading ? (
+              {loading === "generate" ? (
                 <>
                   <Loader2 className="animate-spin h-4 w-4" /> Generating...
                 </>

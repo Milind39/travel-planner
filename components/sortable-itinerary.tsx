@@ -127,7 +127,8 @@ const SortableItem = memo(({ item }: { item: Location }) => {
         <div className="border-t pt-3">
           <ul className="space-y-2">
             {item.description
-              .split(". ")
+              // split sentences at ". " + capital letter OR before Budget:/Local expenses:
+              .split(/\. (?=[A-Z])|(?=Budget:)|(?=Local expenses:)/)
               .filter(Boolean)
               .map((sentence, index) => (
                 <li
@@ -136,8 +137,9 @@ const SortableItem = memo(({ item }: { item: Location }) => {
                 >
                   <MapPin className="w-4 h-4 mt-1 flex-shrink-0" />
                   <span className="leading-relaxed">
-                    {sentence.trim()}
-                    {sentence.includes(".") ? "" : "."}
+                    {sentence.trim().endsWith(".")
+                      ? sentence.trim()
+                      : sentence.trim() + "."}
                   </span>
                 </li>
               ))}
