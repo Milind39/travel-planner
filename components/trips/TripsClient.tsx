@@ -14,8 +14,15 @@ type Trip = {
   id: string;
   title: string;
   description: string;
-  startDate: string; // ISO string now
-  endDate: string; // ISO string now
+  startDate: string; // ISO string
+  endDate: string; // ISO string
+};
+
+type DbUser = {
+  id: string;
+  name: string;
+  email: string;
+  isSubscribed: boolean;
 };
 
 export default function TripsClient({
@@ -28,32 +35,26 @@ export default function TripsClient({
   const [loadingButton, setLoadingButton] = useState<
     "new" | "ai" | "create" | null
   >(null);
-
   const [loadingId, setLoadingId] = useState<string | null>(null);
-  const router = useRouter();
+  const [dbUser, setDbUser] = useState<DbUser | null>(null);
   const [deleted, setDeleted] = useState(false);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { isSignedIn } = useUser();
 
   const handleNavigate = (type: "new" | "ai" | "create") => {
     setLoadingButton(type);
   };
 
-  const searchParams = useSearchParams();
-
-  //************
-  // Fetch the subscription data
-  // **********
-
-  const [dbUser, setDbUser] = useState<any>(null);
-
   useEffect(() => {
     if (isSignedIn) {
       fetch("/api/subscription")
         .then((res) => res.json())
-        .then((data) => {
-          if (!data.error) {
-            console.log("DB User:", data);
+        .then((data: DbUser | { error?: string }) => {
+          if ("isSubscribed" in data) {
             setDbUser(data);
+            console.log("DB User:", data);
           } else {
             toast.error("Failed to load user from DB");
           }
@@ -68,32 +69,28 @@ export default function TripsClient({
     }
   }, [searchParams, router]);
 
+  useEffect(() => {
+    if (deleted) {
+      router.refresh();
+      setDeleted(false);
+    }
+  }, [deleted, router]);
+
   const upcomingTrips = trips.filter(
     (trip) => new Date(trip.startDate) > new Date()
   );
-
   const sortedTrips = [...trips].sort(
     (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
   );
 
-  useEffect(() => {
-    if (deleted) {
-      router.refresh();
-      setDeleted(false); // reset after refresh
-    }
-  }, [deleted, router]);
-
   const handleDelete = async (tripId: string) => {
     try {
       setLoadingId(tripId);
-
-      const res = await fetch(`/api/trips/${tripId}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(`/api/trips/${tripId}`, { method: "DELETE" });
 
       if (res.ok) {
         toast.success("Trip deleted successfully ✅");
-        setDeleted(true); // trigger useEffect
+        setDeleted(true);
       } else {
         const data = await res.json();
         toast.error(data.error || "Failed to delete trip ❌");
@@ -109,7 +106,7 @@ export default function TripsClient({
   return (
     <div className="space-y-6 container mx-auto px-4 py-8 mt-10 pt-16">
       {/* Top Header */}
-      <div className="flex items-center justify-between border rounded-lg p-3 ">
+      <div className="flex items-center justify-between border rounded-lg p-3">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Dashboard
         </h1>
@@ -121,8 +118,7 @@ export default function TripsClient({
             >
               {loadingButton === "new" ? (
                 <>
-                  <Loader2 className="animate-spin" />
-                  Trip...
+                  <Loader2 className="animate-spin" /> Trip...
                 </>
               ) : (
                 "New Trip"
@@ -140,22 +136,21 @@ export default function TripsClient({
               router.push("/trips/ai-trip");
             }}
             className={`
-    relative px-6 py-2 rounded-lg text-white font-medium 
-    bg-indigo-500
-    transition-all duration-300 shadow-md 
-    flex items-center justify-center
-    ${
-      dbUser?.isSubscribed
-        ? "hover:bg-gradient-to-l from-indigo-200 via-indigo-400/20 to-indigo-800 button-hover"
-        : "hover:bg-indigo-500"
-    }
-    ${!dbUser?.isSubscribed ? "opacity-50 cursor-not-allowed" : ""}
-  `}
+              relative px-6 py-2 rounded-lg text-white font-medium 
+              bg-indigo-500
+              transition-all duration-300 shadow-md 
+              flex items-center justify-center
+              ${
+                dbUser?.isSubscribed
+                  ? "hover:bg-gradient-to-l from-indigo-200 via-indigo-400/20 to-indigo-800 button-hover"
+                  : "hover:bg-indigo-500"
+              }
+              ${!dbUser?.isSubscribed ? "opacity-50 cursor-not-allowed" : ""}
+            `}
           >
             {loadingButton === "ai" ? (
               <>
-                <Loader2 className="animate-spin mr-2" />
-                Trip...
+                <Loader2 className="animate-spin mr-2" /> Trip...
               </>
             ) : (
               <>

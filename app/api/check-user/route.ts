@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkUser } from "@/lib/checkUser"; // where you wrote that function
+import { checkUser } from "@/lib/checkUser";
 
 export async function GET() {
   try {
@@ -13,10 +13,11 @@ export async function GET() {
     }
 
     return NextResponse.json(user);
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    // Safely extract message from unknown
+    const message =
+      error instanceof Error ? error.message : "An unknown error occurred";
+
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

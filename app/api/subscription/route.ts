@@ -23,10 +23,14 @@ export async function GET() {
     });
 
     return NextResponse.json({ isSubscribed });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Subscription check failed:", err);
+
+    const message =
+      err instanceof Error ? err.message : "Unknown error occurred";
+
     return NextResponse.json(
-      { isSubscribed: false, error: err.message },
+      { isSubscribed: false, error: message },
       { status: 500 }
     );
   }

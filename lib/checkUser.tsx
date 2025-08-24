@@ -44,8 +44,12 @@ export const checkUser = async () => {
 
     console.log("New user inserted in DB:", newUser);
     return newUser;
-  } catch (error: any) {
-    console.error("Error creating user in DB:", error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error creating user in DB:", error.message);
+    } else {
+      console.error("Unexpected error creating user in DB:", error);
+    }
     return null;
   }
 };

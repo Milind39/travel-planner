@@ -29,7 +29,8 @@ interface SortableItineraryProps {
   tripId: string;
 }
 
-const SortableItem = memo(({ item }: { item: Location }) => {
+// Named inner component
+const SortableItemComponent = ({ item }: { item: Location }) => {
   const {
     attributes,
     listeners,
@@ -127,7 +128,6 @@ const SortableItem = memo(({ item }: { item: Location }) => {
         <div className="border-t pt-3">
           <ul className="space-y-2">
             {item.description
-              // split sentences at ". " + capital letter OR before Budget:/Local expenses:
               .split(/\. (?=[A-Z])|(?=Budget:)|(?=Local expenses:)/)
               .filter(Boolean)
               .map((sentence, index) => (
@@ -148,7 +148,11 @@ const SortableItem = memo(({ item }: { item: Location }) => {
       </motion.div>
     </motion.div>
   );
-});
+};
+
+// Wrap in memo and assign displayName
+const SortableItem = memo(SortableItemComponent);
+SortableItem.displayName = "SortableItem";
 
 export default function SortableItinerary({
   locations,
@@ -188,8 +192,6 @@ export default function SortableItinerary({
 
   return (
     <div className="max-w-full">
-      {" "}
-      {/* Header */}
       <DndContext
         id={id}
         sensors={sensors}
