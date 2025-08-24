@@ -3,8 +3,9 @@
 const nextConfig = {
   reactStrictMode: true,
   eslint: {
-    ignoreDuringBuilds: true, // optional if you want to bypass lint during build
+    // This tells Vercel/Next.js to skip ESLint checks during build
+    ignoreDuringBuilds: true,
   },
 };
 
-export default nextConfig; // <-- use export default
+export default nextConfig;
