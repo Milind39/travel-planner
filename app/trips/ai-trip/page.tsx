@@ -82,6 +82,7 @@ export default function AiTripPage() {
   };
 
   const handleAddTrip = async () => {
+    setLoading("add");
     if (!trip) return;
 
     try {
@@ -99,11 +100,20 @@ export default function AiTripPage() {
       }
 
       const savedTrip = await res.json();
-      toast.success("Trip added to database successfully!");
+      toast.success("Trip added to database successfully!", savedTrip);
+
+      // Update local trip state
+      setTrip(savedTrip);
+      // Force refresh server component to get new trip
+      // router.refresh();
+
+      // Optionally navigate to /trips if you want
       router.push("/trips");
     } catch (err) {
       console.error("Request failed:", err);
       toast.error("Error saving trip.");
+    } finally {
+      setLoading(null); // reset loader
     }
   };
 
@@ -179,7 +189,7 @@ export default function AiTripPage() {
               <Button
                 onClick={handleAddTrip}
                 variant="default"
-                className="flex-1 bg-emerald-600 hover:bg-emerald-600/90 text-foreground flex justify-center items-center"
+                className="flex-1 bg-emerald-600 hover:bg-emerald-600/90 text-white flex justify-center items-center"
               >
                 {loading === "add" ? (
                   <>
