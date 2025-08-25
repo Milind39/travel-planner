@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 const Pricing = () => {
   return (
     <section className="py-[55px] container m-16 max-w-screen">
-      <h1 className="text-4xl font-bold text-foreground text-center mb-12 border rounded-lg p-2">
+      <h1 className="text-4xl font-bold text-foreground text-center mb-12 border rounded-lg p-2 backdrop-blur">
         Choose Your Plan
       </h1>
 

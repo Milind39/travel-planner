@@ -33,8 +33,9 @@ export default function TripsClient({
   trips: Trip[];
 }) {
   const [loadingButton, setLoadingButton] = useState<
-    "new" | "ai" | "create" | null
+    { type: "new" | "ai" | "create" } | { type: "card"; tripId: string } | null
   >(null);
+
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [dbUser, setDbUser] = useState<DbUser | null>(null);
   const [deleted, setDeleted] = useState(false);
@@ -43,8 +44,20 @@ export default function TripsClient({
   const searchParams = useSearchParams();
   const { isSignedIn } = useUser();
 
-  const handleNavigate = (type: "new" | "ai" | "create") => {
-    setLoadingButton(type);
+  const handleNavigate = (
+    type: "new" | "ai" | "create" | "card",
+    tripId?: string
+  ) => {
+    if (type === "card") {
+      if (!tripId) {
+        console.error("tripId is required when type is 'card'");
+        return;
+      }
+      setLoadingButton({ type: "card", tripId });
+      router.push(`/trips/${tripId}`);
+    } else {
+      setLoadingButton({ type }); // ✅ safe: only "new" | "ai" | "create"
+    }
   };
 
   useEffect(() => {
@@ -106,7 +119,7 @@ export default function TripsClient({
   return (
     <div className="space-y-6 container mx-auto px-4 py-8 mt-10 pt-16">
       {/* Top Header */}
-      <div className="flex items-center justify-between border rounded-lg p-3">
+      <div className="flex items-center justify-between border rounded-lg p-3 backdrop-blur ">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Dashboard
         </h1>
@@ -116,7 +129,7 @@ export default function TripsClient({
               onClick={() => handleNavigate("new")}
               className="button-hover bg-black/90 text-white hover:bg-black/70 px-6 py-2 rounded-lg hover:bg-gradient-to-r from-slate-500 via-slate-700 to-black/30"
             >
-              {loadingButton === "new" ? (
+              {loadingButton?.type === "new" ? (
                 <>
                   <Loader2 className="animate-spin" /> Trip...
                 </>
@@ -148,7 +161,7 @@ export default function TripsClient({
               ${!dbUser?.isSubscribed ? "opacity-50 cursor-not-allowed" : ""}
             `}
           >
-            {loadingButton === "ai" ? (
+            {loadingButton?.type === "ai" ? (
               <>
                 <Loader2 className="animate-spin mr-2" /> Trip...
               </>
@@ -189,7 +202,7 @@ export default function TripsClient({
 
       {/* Recent Trips */}
       <div>
-        <h2 className="text-xl font-semibold mb-4 text-foreground border rounded-lg p-3">
+        <h2 className="text-xl font-semibold mb-4 text-foreground border rounded-lg p-3 backdrop-blur">
           Your Recent Trips
         </h2>
         {trips.length === 0 ? (
@@ -204,7 +217,7 @@ export default function TripsClient({
                   className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg"
                   onClick={() => handleNavigate("create")}
                 >
-                  {loadingButton === "create" ? (
+                  {loadingButton?.type === "create" ? (
                     <>
                       <Loader2 className="animate-spin h-4 w-4" /> Loading...
                     </>
@@ -220,14 +233,15 @@ export default function TripsClient({
             {sortedTrips.slice(0, 6).map((trip) => (
               <Card
                 key={trip.id}
-                onClick={() => router.push(`/trips/${trip.id}`)}
-                className="button-hover border-0 transition-transform duration-300 hover:scale-105 hover:shadow-lg bg-indigo-300 text-black cursor-pointer"
+                onClick={() => handleNavigate("card", trip.id)}
+                className="button-hover border-0 transition-transform duration-300 hover:scale-105 hover:shadow-lg bg-indigo-300 text-black cursor-pointer relative"
               >
                 <CardHeader>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <CardTitle className="line-clamp-1 text-2xl">
                       {trip.title.toUpperCase()}
                     </CardTitle>
+
                     <Badge
                       className="items-center bg-red-400 hover:bg-red-600 text-white ml-3 cursor-pointer z-10"
                       onClick={(e) => {
@@ -253,6 +267,14 @@ export default function TripsClient({
                     {new Date(trip.endDate).toLocaleDateString()}
                   </div>
                 </CardContent>
+
+                {/* Overlay Loader when card is clicked */}
+                {loadingButton?.type === "card" &&
+                  loadingButton.tripId === trip.id && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
+                      <Loader2 className="h-8 w-8 animate-spin text-white" />
+                    </div>
+                  )}
               </Card>
             ))}
           </div>

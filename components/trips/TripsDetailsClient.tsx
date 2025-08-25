@@ -25,7 +25,13 @@ const Map = dynamic(() => import("../map"), {
 
 export default function TripDetailClient({ trip }: TripDetailClientProps) {
   const [activeTab, setActiveTab] = useState("overview");
-  const [loading, setLoading] = useState(false);
+  const [loadingButton, setLoadingButton] = useState<"add" | "back" | null>(
+    null
+  );
+
+  const handleNavigate = (type: "add" | "back") => {
+    setLoadingButton(type);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8 pt-24">
@@ -57,10 +63,17 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
           </div>
         </div>
         <div className="mt-4 md:mt-0">
-          <Link href={`/trips/${trip.id}/itinerary/new`}>
-            <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg">
-              {" "}
-              <Plus className="mr-2 h-5 w-5" /> Add Location
+          <Link
+            href={`/trips/${trip.id}/itinerary/new`}
+            onClick={() => handleNavigate("add")}
+          >
+            <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg flex items-center">
+              {loadingButton == "add" ? (
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              ) : (
+                <Plus className="mr-2 h-5 w-5" />
+              )}
+              Add Location
             </Button>
           </Link>
         </div>
@@ -90,9 +103,9 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
             </TabsList>
 
             <div className="text-center">
-              <Link href="/trips" onClick={() => setLoading(true)}>
+              <Link href="/trips" onClick={() => handleNavigate("back")}>
                 <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg">
-                  {loading ? (
+                  {loadingButton == "back" ? (
                     <Loader2 className="animate-spin h-4 w-4" />
                   ) : (
                     <ChevronLeft />

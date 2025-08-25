@@ -19,7 +19,7 @@
 
   /* Grid */
   --gridline-color: rgba(0, 0, 0, 0.04);
-  --gridline-size: 1px;
+  --gridline-size: 3px;
   --gridline-spacing: 40px;
 }
 
@@ -43,11 +43,23 @@
       linear-gradient(var(--gridline-color) var(--gridline-size), transparent var(--gridline-size)),
       linear-gradient(90deg, var(--gridline-color) var(--gridline-size), transparent var(--gridline-size));
     background-size: var(--gridline-spacing) var(--gridline-spacing);
+
+    /* Animate diagonal movement */
+    animation: gridMove 10s linear infinite;
   }
 }
 
-@layer utilities{
-    .button-hover {
+@keyframes gridMove {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 100px 100px, 100px 100px;
+  }
+}
+
+@layer utilities {
+  .button-hover {
     @apply transition-transform duration-100 hover:scale-[1.05] hover:shadow-lg;
   }
 }
