@@ -49,14 +49,11 @@ export default function TripsClient({
     tripId?: string
   ) => {
     if (type === "card") {
-      if (!tripId) {
-        console.error("tripId is required when type is 'card'");
-        return;
-      }
+      if (!tripId) return;
       setLoadingButton({ type: "card", tripId });
       router.push(`/trips/${tripId}`);
     } else {
-      setLoadingButton({ type }); // ✅ safe: only "new" | "ai" | "create"
+      setLoadingButton({ type });
     }
   };
 
@@ -65,21 +62,15 @@ export default function TripsClient({
       fetch("/api/subscription")
         .then((res) => res.json())
         .then((data: DbUser | { error?: string }) => {
-          if ("isSubscribed" in data) {
-            setDbUser(data);
-            console.log("DB User:", data);
-          } else {
-            toast.error("Failed to load user from DB");
-          }
+          if ("isSubscribed" in data) setDbUser(data);
+          else toast.error("Failed to load user from DB");
         })
         .catch(() => toast.error("Error connecting to backend"));
     }
   }, [isSignedIn]);
 
   useEffect(() => {
-    if (searchParams.get("refresh") === "true") {
-      router.refresh();
-    }
+    if (searchParams.get("refresh") === "true") router.refresh();
   }, [searchParams, router]);
 
   useEffect(() => {
@@ -100,7 +91,6 @@ export default function TripsClient({
     try {
       setLoadingId(tripId);
       const res = await fetch(`/api/trips/${tripId}`, { method: "DELETE" });
-
       if (res.ok) {
         toast.success("Trip deleted successfully ✅");
         setDeleted(true);
@@ -119,15 +109,15 @@ export default function TripsClient({
   return (
     <div className="space-y-6 container mx-auto px-4 py-8 mt-10 pt-16">
       {/* Top Header */}
-      <div className="flex items-center justify-between border rounded-lg p-3 backdrop-blur ">
+      <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-4 border rounded-lg p-3 backdrop-blur">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Dashboard
         </h1>
-        <div className="flex gap-4">
-          <Link href="/trips/new">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+          <Link href="/trips/new" className="w-full sm:w-auto">
             <Button
               onClick={() => handleNavigate("new")}
-              className="button-hover bg-black/90 text-white hover:bg-black/70 px-6 py-2 rounded-lg hover:bg-gradient-to-r from-slate-500 via-slate-700 to-black/30"
+              className="button-hover bg-black/90 text-white hover:bg-black/70 px-6 py-2 rounded-lg hover:bg-gradient-to-r from-slate-500 via-slate-700 to-black/30 w-full sm:w-auto"
             >
               {loadingButton?.type === "new" ? (
                 <>
@@ -150,7 +140,7 @@ export default function TripsClient({
             }}
             className={`
               relative px-6 py-2 rounded-lg text-white font-medium 
-              bg-indigo-500
+              bg-indigo-500 w-full sm:w-auto
               transition-all duration-300 shadow-md 
               flex items-center justify-center
               ${
@@ -186,7 +176,7 @@ export default function TripsClient({
           <CardTitle>Welcome back, {userName}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p>
+          <p className="text-sm sm:text-base">
             {trips.length === 0
               ? "Start planning your first trip by clicking the button above."
               : `You have ${trips.length} ${
@@ -207,14 +197,14 @@ export default function TripsClient({
         </h2>
         {trips.length === 0 ? (
           <Card className="border-0 backdrop-blur-md bg-indigo-300 text-black">
-            <CardContent className="flex flex-col items-center justify-center py-8">
+            <CardContent className="flex flex-col items-center justify-center py-8 gap-3">
               <h3 className="text-xl font-medium mb-2">No trips yet.</h3>
-              <p className="text-center mb-4 max-w-md">
+              <p className="text-center text-sm sm:text-base max-w-md">
                 Start planning your adventure by creating your first trip.
               </p>
-              <Link href="/trips/new">
+              <Link href="/trips/new" className="w-full sm:w-auto">
                 <Button
-                  className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg"
+                  className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg w-full sm:w-auto"
                   onClick={() => handleNavigate("create")}
                 >
                   {loadingButton?.type === "create" ? (
@@ -229,7 +219,7 @@ export default function TripsClient({
             </CardContent>
           </Card>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {sortedTrips.slice(0, 6).map((trip) => (
               <Card
                 key={trip.id}
@@ -237,15 +227,14 @@ export default function TripsClient({
                 className="button-hover border-0 transition-transform duration-300 hover:scale-105 hover:shadow-lg bg-indigo-300 text-black cursor-pointer relative"
               >
                 <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="line-clamp-1 text-2xl">
+                  <div className="flex justify-between items-start sm:items-center gap-2 flex-wrap">
+                    <CardTitle className="line-clamp-1 text-lg sm:text-2xl">
                       {trip.title.toUpperCase()}
                     </CardTitle>
-
                     <Badge
-                      className="items-center bg-red-400 hover:bg-red-600 text-white ml-3 cursor-pointer z-10"
+                      className="items-center bg-red-400 hover:bg-red-600 text-white cursor-pointer z-10"
                       onClick={(e) => {
-                        e.stopPropagation(); // prevent card click
+                        e.stopPropagation();
                         handleDelete(trip.id);
                       }}
                       variant="destructive"
@@ -268,7 +257,6 @@ export default function TripsClient({
                   </div>
                 </CardContent>
 
-                {/* Overlay Loader when card is clicked */}
                 {loadingButton?.type === "card" &&
                   loadingButton.tripId === trip.id && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">

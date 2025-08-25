@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { UploadButton } from "@/lib/uploadthing";
 import Image from "next/image";
 import DashboardButton from "@/components/DashboardButton";
+import DashBoardButton from "@/components/DashboardButton";
 
 export default function NewTrip() {
   const { user, isLoaded } = useUser();
@@ -75,7 +76,9 @@ export default function NewTrip() {
   return (
     <>
       {/* Dashboard Button aligned left */}
-      <DashboardButton />
+      <div className="hidden sm:block">
+        <DashBoardButton />
+      </div>
 
       <div className="max-w-lg mx-auto mt-10 flex flex-col gap-6 pt-14">
         {/* Card centered */}

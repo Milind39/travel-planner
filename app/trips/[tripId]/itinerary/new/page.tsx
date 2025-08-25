@@ -10,7 +10,10 @@ export default async function NewLocation({
 
   return (
     <div className="pt-12">
-      <DashBoardButton />
+      <div className="hidden sm:block">
+        <DashBoardButton />
+      </div>
+
       <NewLocationClient tripId={tripId} />
     </div>
   );

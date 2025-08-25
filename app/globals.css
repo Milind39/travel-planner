@@ -58,6 +58,13 @@
   }
 }
 
+/* Mobile grid spacing */
+@media (max-width: 640px) {
+  :root {
+    --gridline-spacing: 25px;
+  }
+}
+
 @layer utilities {
   .button-hover {
     @apply transition-transform duration-100 hover:scale-[1.05] hover:shadow-lg;

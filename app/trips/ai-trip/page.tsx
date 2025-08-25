@@ -42,7 +42,7 @@ export default function AiTripPage() {
   } | null>(null);
 
   const handleGenerate = async () => {
-    setLoading("generate"); // mark generate button as loading
+    setLoading("generate");
     setTripPlan(null);
     setTrip(null);
 
@@ -59,7 +59,6 @@ export default function AiTripPage() {
       });
 
       const data = await res.json();
-      console.log("Ai data :", data);
       if (data.destination && data.itinerary) {
         setTripPlan(data);
         setTrip({
@@ -85,15 +84,11 @@ export default function AiTripPage() {
   const handleAddTrip = async () => {
     if (!trip) return;
 
-    console.log("Generated Trip:", trip);
-
     try {
       const res = await fetch("/api/trips", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(trip), // send full JSON
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(trip),
       });
 
       if (!res.ok) {
@@ -104,7 +99,6 @@ export default function AiTripPage() {
       }
 
       const savedTrip = await res.json();
-      console.log("Trip saved successfully:", savedTrip);
       toast.success("Trip added to database successfully!");
       router.push("/trips");
     } catch (err) {
@@ -115,13 +109,17 @@ export default function AiTripPage() {
 
   return (
     <>
-      <DashBoardButton />
+      {/* Dashboard Button (hidden on mobile) */}
+      <div className="hidden sm:block mb-6">
+        <DashBoardButton />
+      </div>
 
-      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-16 pt-32 mt-10">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 pt-20 lg:pt-28">
         {/* Left: Form Section */}
-
-        <Card className="p-6 shadow-lg rounded-2xl border backdrop-blur-md border-indigo-600 bg-indigo-600/40">
-          <h1 className="text-2xl font-bold mb-4">AI Trip Planner</h1>
+        <Card className="p-4 sm:p-6 shadow-lg rounded-2xl border backdrop-blur-md border-indigo-600 bg-indigo-600/40">
+          <h1 className="text-xl sm:text-2xl font-bold mb-4 text-center sm:text-left">
+            AI Trip Planner
+          </h1>
 
           <input
             type="text"
@@ -132,7 +130,7 @@ export default function AiTripPage() {
             required
           />
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">
                 Start Date
@@ -143,7 +141,7 @@ export default function AiTripPage() {
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 className={cn(
-                  "w-full px-3 py-2 rounded-md border-indigo-300 border ",
+                  "w-full px-3 py-2 rounded-md border-indigo-300 border",
                   "focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 )}
                 required
@@ -159,7 +157,7 @@ export default function AiTripPage() {
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
                 className={cn(
-                  "w-full  px-3 py-2 rounded-md border-indigo-300 border ",
+                  "w-full px-3 py-2 rounded-md border-indigo-300 border",
                   "focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 )}
                 required
@@ -172,18 +170,17 @@ export default function AiTripPage() {
 +What is your Checkin location`}
             value={interests}
             onChange={(e) => setInterests(e.target.value)}
-            className=" rounded w-full p-2 mb-4 focus:outline-none focus:ring-1 focus:ring-indigo-500 border-indigo-300 border "
+            className="rounded w-full p-2 mb-4 focus:outline-none focus:ring-1 focus:ring-indigo-500 border-indigo-300 border"
             required
           />
 
           {trip ? (
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={handleAddTrip}
                 variant="default"
-                className="flex-1 bg-emerald-600 hover:bg-emerald-600/90 text-foreground"
+                className="flex-1 bg-emerald-600 hover:bg-emerald-600/90 text-foreground flex justify-center items-center"
               >
-                {" "}
                 {loading === "add" ? (
                   <>
                     <Loader2 className="animate-spin h-4 w-4" /> Adding...
@@ -222,10 +219,10 @@ export default function AiTripPage() {
 
         {/* Right: Carousel Section */}
         {tripPlan && (
-          <div className="space-y-6">
+          <div className="space-y-6 mt-6 lg:mt-0">
             {/* Header */}
             <div className="bg-[#cc66daa7] border-gray-400 border-2 p-4 rounded-lg shadow text-center">
-              <h2 className="text-xl font-bold">
+              <h2 className="text-lg sm:text-xl font-bold">
                 {tripPlan.destination
                   ? tripPlan.destination
                       .split(" ")
@@ -236,41 +233,47 @@ export default function AiTripPage() {
                   : ""}
                 {" Trip"}
               </h2>
-              <p className="text-foreground pt-3">
+              <p className="text-foreground pt-2 sm:pt-3 text-sm sm:text-base">
                 <span className="font-bold">Start:</span> {tripPlan.startDate} &{" "}
                 <span className="font-bold">End:</span> {tripPlan.endDate}
               </p>
             </div>
 
             {/* Carousel */}
-            <Carousel className="w-full h-[100px] sm:h-[800px] lg:h-[400px]">
-              <CarouselContent className="h-auto w-auto cursor-pointer select-none">
-                {tripPlan.itinerary.map((dayPlan, idx) => (
-                  <CarouselItem
-                    key={idx}
-                    className="basis-1/1 lg:basis-1/2 w-auto"
-                  >
-                    <div className="p-4 border rounded-lg shadow-sm bg-[#f9ea9799] hover:shadow-md transition h-auto flex flex-col">
-                      <h3 className="font-semibold text-black">
-                        Day {dayPlan.day}: {dayPlan.title}
-                      </h3>
-                      <ul className="mt-3 space-y-2">
-                        {dayPlan.activities.map((activity, i) => (
-                          <li key={i} className="flex gap-2">
-                            <span className="text-blue-600 font-semibold">
-                              •
-                            </span>
-                            <span>{activity}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
-            </Carousel>
+            {/* Carousel */}
+            {/* Carousel */}
+            <div className="relative overflow-x-auto lg:overflow-visible">
+              <Carousel className="w-full lg:w-[680px] h-[250px] sm:h-[500px] lg:h-[300px] flex gap-8">
+                <CarouselContent className="flex space-x-4 sm:space-x-6 cursor-pointer select-none">
+                  {tripPlan.itinerary.map((dayPlan, idx) => (
+                    <CarouselItem
+                      key={idx}
+                      className="min-w-[250px] sm:min-w-[400px] lg:min-w-auto flex-shrink-0"
+                    >
+                      <div className="p-3 sm:p-4 border rounded-lg shadow-sm bg-[#f9ea9799] hover:shadow-md transition h-auto flex flex-col">
+                        <h3 className="font-semibold text-black text-sm sm:text-base">
+                          Day {dayPlan.day}: {dayPlan.title}
+                        </h3>
+                        <ul className="mt-2 sm:mt-3 space-y-1 sm:space-y-2 text-xs sm:text-sm">
+                          {dayPlan.activities.map((activity, i) => (
+                            <li key={i} className="flex gap-2">
+                              <span className="text-blue-600 font-semibold">
+                                •
+                              </span>
+                              <span>{activity}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+
+                {/* Styled Arrows */}
+                <CarouselPrevious className="hidden sm:block mb-6 absolute left-[-2rem] top-1/3 transform -translate-y-1/2 bg-indigo-500 text-white rounded-full p-2 hover:bg-indigo-600 shadow-lg z-10" />
+                <CarouselNext className="hidden sm:block mb-6 absolute right-[-2rem] top-1/3 transform -translate-y-1/2 bg-indigo-500 text-white rounded-full p-2 hover:bg-indigo-600 shadow-lg z-10" />
+              </Carousel>
+            </div>
           </div>
         )}
       </div>

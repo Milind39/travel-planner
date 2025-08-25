@@ -18,10 +18,7 @@ interface TripDetailClientProps {
   trip: TripWithLocation;
 }
 
-// Import Map dynamically (disable SSR)
-const Map = dynamic(() => import("../map"), {
-  ssr: false,
-});
+const Map = dynamic(() => import("../map"), { ssr: false });
 
 export default function TripDetailClient({ trip }: TripDetailClientProps) {
   const [activeTab, setActiveTab] = useState("overview");
@@ -29,15 +26,13 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
     null
   );
 
-  const handleNavigate = (type: "add" | "back") => {
-    setLoadingButton(type);
-  };
+  const handleNavigate = (type: "add" | "back") => setLoadingButton(type);
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8 pt-24">
-      {" "}
+    <div className="container mx-auto px-4 py-8 space-y-6 pt-24">
+      {/* Image */}
       {trip.imageUrl && (
-        <div className="w-full h-72 md:h-96 overflow-hidden rounded-xl shadow-lg relative bg-">
+        <div className="w-full h-56 sm:h-72 md:h-96 overflow-hidden rounded-xl shadow-lg relative">
           <Image
             src={trip.imageUrl}
             alt={trip.title}
@@ -47,28 +42,31 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
           />
         </div>
       )}
-      <div className="bg-black/40 backdrop-blur-md border-0  p-6 shadow rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center">
-        <div className="text-foreground">
-          <h1 className="text-4xl font-extrabold ">
-            {" "}
+
+      {/* Header */}
+      <div className="bg-black/40 backdrop-blur-md border-0 p-4 sm:p-6 shadow rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="text-foreground flex-1">
+          <h1 className="text-2xl sm:text-4xl font-extrabold">
             {trip.title.toUpperCase()}
           </h1>
 
-          <div className="flex items-center  mt-2">
+          <div className="flex items-center mt-2 text-sm sm:text-base">
             <Calendar className="h-5 w-5 mr-2" />
-            <span className="text-lg">
+            <span>
               {trip.startDate.toLocaleDateString()} -{" "}
               {trip.endDate.toLocaleDateString()}
             </span>
           </div>
         </div>
-        <div className="mt-4 md:mt-0">
+
+        <div className="w-full md:w-auto flex flex-col sm:flex-row gap-2">
           <Link
             href={`/trips/${trip.id}/itinerary/new`}
             onClick={() => handleNavigate("add")}
+            className="w-full sm:w-auto"
           >
-            <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg flex items-center">
-              {loadingButton == "add" ? (
+            <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-600 px-4 py-2 rounded-lg flex items-center justify-center w-full">
+              {loadingButton === "add" ? (
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               ) : (
                 <Plus className="mr-2 h-5 w-5" />
@@ -76,55 +74,65 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
               Add Location
             </Button>
           </Link>
+
+          <Link
+            href="/trips"
+            onClick={() => handleNavigate("back")}
+            className="w-full sm:w-auto"
+          >
+            <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-600 px-4 py-2 rounded-lg flex items-center justify-center w-full">
+              {loadingButton === "back" ? (
+                <Loader2 className="animate-spin h-4 w-4 mr-2" />
+              ) : (
+                <ChevronLeft className="mr-2 h-4 w-4" />
+              )}
+              <span>Back to Trips</span>
+            </Button>
+          </Link>
         </div>
       </div>
-      <div className="bg-black/40 backdrop-blur-md border-0 text-foreground p-6 shadow rounded-lg">
+
+      {/* Tabs */}
+      <div className="bg-black/40 backdrop-blur-md border-0 text-foreground p-4 sm:p-6 shadow rounded-lg">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <div className="flex items-center justify-between mb-8">
-            <TabsList className="bg-gray-500 pl-0 pr-0">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-8 gap-4 sm:gap-0">
+            <TabsList className="flex flex-wrap sm:flex-nowrap bg-gray-500 p-0 rounded-lg overflow-x-auto">
               <TabsTrigger
                 value="overview"
-                className="text-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white"
+                className="text-sm sm:text-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white flex-1 sm:flex-none text-center"
               >
                 Overview
               </TabsTrigger>
               <TabsTrigger
                 value="itinerary"
-                className="text-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white"
+                className="text-sm sm:text-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white flex-1 sm:flex-none text-center"
               >
                 Itinerary
               </TabsTrigger>
               <TabsTrigger
                 value="map"
-                className="text-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white"
+                className="text-sm sm:text-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white flex-1 sm:flex-none text-center"
               >
                 Map
               </TabsTrigger>
             </TabsList>
-
-            <div className="text-center">
-              <Link href="/trips" onClick={() => handleNavigate("back")}>
-                <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg">
-                  {loadingButton == "back" ? (
-                    <Loader2 className="animate-spin h-4 w-4" />
-                  ) : (
-                    <ChevronLeft />
-                  )}
-                  Back to Trips
-                </Button>
-              </Link>
-            </div>
           </div>
 
-          <TabsContent value="overview" className="space-y-6 text-foreground">
-            <div className="grid md:grid-cols-2 gap-6">
+          {/* Overview */}
+          <TabsContent
+            value="overview"
+            className="space-y-4 sm:space-y-6 text-foreground"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <h2 className="text-2xl font-semibold mb-4"> Trip Summary</h2>
-                <div className="space-y-4">
-                  <div className="flex items-start">
-                    <Calendar className="h-6 w-6 mr-3 text-indigo-500" />
+                <h2 className="text-xl sm:text-2xl font-semibold mb-4">
+                  Trip Summary
+                </h2>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <Calendar className="h-5 w-5 text-indigo-500" />
                     <div>
-                      <p className="font-medium "> Dates</p>
+                      <p className="font-medium">Dates</p>
                       <p className="text-sm">
                         {trip.startDate.toLocaleDateString()} -{" "}
                         {trip.endDate.toLocaleDateString()}
@@ -136,12 +144,11 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start">
-                    <MapPin className="h-6 w-6 mr-3 text-indigo-500" />
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <MapPin className="h-5 w-5 text-indigo-500" />
                     <div>
-                      <p> Destinations</p>
+                      <p>Destinations</p>
                       <p>
-                        {" "}
                         {trip.locations.length}{" "}
                         {trip.locations.length === 1 ? "location" : "locations"}
                       </p>
@@ -149,70 +156,67 @@ export default function TripDetailClient({ trip }: TripDetailClientProps) {
                   </div>
                 </div>
               </div>
-              <div className="h-72 rounded-lg overflow-hidden shadow">
+              <div className="h-56 sm:h-72 md:h-96 rounded-lg overflow-hidden shadow">
                 <Map itineraries={trip.locations} />
               </div>
+
               {trip.locations.length === 0 && (
-                <div className="text-center p-4">
+                <div className="text-center p-4 col-span-full">
                   <p className="pb-3">Add locations to see them on the map.</p>
                   <Link href={`/trips/${trip.id}/itinerary/new`}>
-                    <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg">
-                      {" "}
+                    <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-4 py-2 rounded-lg w-full sm:w-auto flex items-center justify-center">
                       <Plus className="mr-2 h-5 w-5" /> Add Location
                     </Button>
                   </Link>
                 </div>
               )}
-
-              <div>
-                <h2 className="text-2xl font-semibold mb-4">Description</h2>
-                <p className="text-foreground leading-relaxed pl-5">
+              <div className="col-span-full">
+                <h2 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-4">
+                  Description
+                </h2>
+                <p className="text-foreground leading-relaxed pl-2 sm:pl-5 text-sm sm:text-base">
                   {trip.description}
                 </p>
               </div>
             </div>
           </TabsContent>
 
-          <TabsContent value="itinerary" className="space-y-6">
-            <div className="flex justify-between items-center mb-4 pb-3">
-              <h2 className="text-3xl font-semibold">
-                {" "}
-                Full Itinerary
-                <span> </span>
-                <span className="text-foreground-text-light text-lg max-w-2xl mx-auto">
-                  (Drag and drop to reorder your destinations. Click the arrow
-                  to view detailed descriptions)
-                </span>
-              </h2>
-            </div>
-
+          {/* Itinerary */}
+          <TabsContent value="itinerary" className="space-y-4 sm:space-y-6 ">
             {trip.locations.length === 0 ? (
               <div className="text-center p-4 text-foreground">
                 <p className="pb-3">
                   Add locations to see them on the itinerary.
                 </p>
                 <Link href={`/trips/${trip.id}/itinerary/new`}>
-                  <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg">
-                    {" "}
+                  <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-4 py-2 rounded-lg w-full sm:w-auto flex items-center justify-center">
                     <Plus className="mr-2 h-5 w-5" /> Add Location
                   </Button>
                 </Link>
               </div>
             ) : (
-              <SortableItinerary locations={trip.locations} tripId={trip.id} />
+              <div className="overflow-x-auto">
+                <SortableItinerary
+                  locations={trip.locations}
+                  tripId={trip.id}
+                />
+              </div>
             )}
           </TabsContent>
 
-          <TabsContent value="map" className="space-y-6">
-            <div className="h-72 rounded-lg overflow-hidden shadow">
+          {/* Map */}
+          <TabsContent
+            value="map"
+            className="space-y-4 sm:space-y-6 text-xs sm:text-sm md:text-base"
+          >
+            <div className="h-56 sm:h-72 md:h-96 rounded-lg overflow-hidden shadow">
               <Map itineraries={trip.locations} />
             </div>
             {trip.locations.length === 0 && (
-              <div className="text-center p-4">
+              <div className="text-center p-4 text-xs sm:text-sm md:text-base">
                 <p className="pb-3">Add locations to see them on the map.</p>
                 <Link href={`/trips/${trip.id}/itinerary/new`}>
-                  <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg">
-                    {" "}
+                  <Button className="button-hover bg-indigo-500 text-white hover:bg-indigo-500 px-4 py-2 rounded-lg w-full sm:w-auto flex items-center justify-center text-xs sm:text-sm md:text-base">
                     <Plus className="mr-2 h-5 w-5" /> Add Location
                   </Button>
                 </Link>

@@ -1,18 +1,17 @@
 import React from "react";
-
 import { PricingTable } from "@clerk/nextjs";
 import { Card, CardContent } from "@/components/ui/card";
 
 const Pricing = () => {
   return (
-    <section className="py-[55px] container m-16 max-w-screen">
-      <h1 className="text-4xl font-bold text-foreground text-center mb-12 border rounded-lg p-2 backdrop-blur">
+    <section className="py-12 sm:py-16 px-4 sm:px-6 md:px-12 container mx-auto sm:mt-12 lg:mt-10">
+      <h1 className="text-3xl sm:text-4xl font-bold text-foreground text-center mb-8 sm:mb-12 border rounded-lg p-2 backdrop-blur">
         Choose Your Plan
       </h1>
 
-      <div className="max-w-4xl mx-auto rounded-xl pt-1">
+      <div className="max-w-full sm:max-w-4xl mx-auto rounded-xl pt-1">
         <Card className="border-0">
-          <CardContent className=" p-4 bg-gradient-to-b from-indigo-300 via-indigo-200 to-transparent border-0">
+          <CardContent className="p-2 sm:p-4 bg-gradient-to-b from-indigo-300 via-indigo-200 to-transparent border-0">
             <PricingTable
               checkoutProps={{
                 appearance: {
@@ -25,7 +24,8 @@ const Pricing = () => {
                       color: "white",
                       fontWeight: "600",
                       borderRadius: "12px",
-                      padding: "12px 20px",
+                      padding: "10px 16px",
+                      fontSize: "14px",
                       transition: "all 0.2s ease-in-out",
                     },
                     buttonPrimary__hover: {
